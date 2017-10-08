@@ -7,20 +7,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import java.util.*;
-import java.nio.FloatBuffer;
-
-
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.BufferUtils;
-
-import javax.swing.*;
 
 public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor {
 
-	private float angle;
+	private boolean fps;
 
 	Shader shader;
-	private Camera cam;
+	private Camera fpsCam;
+	private Camera thirdPersonCam;
 	private Camera orthoCam;
 
 	private float fov = 90.0f;
@@ -30,7 +24,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	@Override
 	public void create ()
     {
-
+		fps = false;
 	    randomMazeGenerator();
 		shader = new Shader();
 
@@ -48,13 +42,14 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
-//		ModelMatrix.main.setShaderMatrix(modelMatrixLoc);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
-		cam = new Camera();
-		cam.look(new Point3D(0f, 0f, 4f), new Point3D(0,0,0),  new Vector3D(0,1,0));
+		fpsCam = new Camera();
+		fpsCam.look(new Point3D(0f, 2f, 4f), new Point3D(0,2,0), new Vector3D(0,1,0));
+
+		thirdPersonCam = new Camera();
 
 		orthoCam = new Camera();
 		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
@@ -65,41 +60,29 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		float deltaTime = Gdx.graphics.getDeltaTime();
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			cam.yaw(-90.0f * deltaTime);
+			fpsCam.yaw(-90.0f * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			cam.yaw(90.0f * deltaTime);
+			fpsCam.yaw(90.0f * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			cam.pitch(-90.0f * deltaTime);
+			fpsCam.pitch(-90.0f * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			cam.pitch(90.0f * deltaTime);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.Q)) {
-			cam.roll(-90.0f * deltaTime);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.E)) {
-			cam.roll(90.0f * deltaTime);
+			fpsCam.pitch(90.0f * deltaTime);
 		}
 
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cam.slide(-3.0f * deltaTime, 0, 0);
+			fpsCam.slide(-3.0f * deltaTime, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cam.slide(3.0f * deltaTime, 0, 0);
+			fpsCam.slide(3.0f * deltaTime, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cam.slide(0,0, -3.0f * deltaTime);
+			fpsCam.slide(0,0, -3.0f * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cam.slide(0,0, 3.0f * deltaTime);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.R)) {
-			cam.slide(0,3.0f * deltaTime, 0);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.F)) {
-			cam.slide(0,-3.0f * deltaTime, 0);
+			fpsCam.slide(0,0, 3.0f * deltaTime);
 		}
 
 		if(Gdx.input.isKeyPressed(Input.Keys.T)) {
@@ -109,10 +92,23 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 			fov += 30.0f * deltaTime;
 		}
 
+		if(Gdx.input.isKeyJustPressed(Input.Keys.V)) {
+			if(fps)
+				fps = false;
+			else
+				fps = true;
+		}
+
 		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			System.out.println("x: " + cam.getEye().x);
-			System.out.println("y: " + cam.getEye().y);
-			System.out.println("z: " + cam.getEye().z);
+			System.out.println("3rd-x: " + thirdPersonCam.getEye().x);
+			System.out.println("3rd-y: " + thirdPersonCam.getEye().y);
+			System.out.println("3rd-z: " + thirdPersonCam.getEye().z);
+			System.out.println();
+			System.out.println("fps-x: " + fpsCam.getEye().x);
+			System.out.println("fps-y: " + fpsCam.getEye().y);
+			System.out.println("fps-z: " + fpsCam.getEye().z);
+			System.out.println("fps: " + fps);
+			System.out.println("-------------------------");
 		}
 
 	}
@@ -134,47 +130,26 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		shader.setColor(0.0f, 1f, 1f, 1.0f);
 
-		ModelMatrix.main.loadIdentityMatrix();
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(0,3,-1);
-		ModelMatrix.main.addScale(2,2,2);
-		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.popMatrix();
-
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.addTranslation(50,0,50);
-		ModelMatrix.main.addScale(100,1,100);
-		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.popMatrix();
+		thirdPersonCam.look(new Point3D(fpsCam.eye.x - 1f, fpsCam.eye.y + 0.5f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0,1,0));
 
 		for(int viewNum = 0; viewNum < 2; viewNum++)
 		{
 			if(viewNum == 0)
 			{
-				Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-				cam.perspectiveProjection(fov, 1.0f,0.1f,10000000.0f);
-				shader.setViewMatrix(cam.getViewMatrix());
-				shader.setProjectionMatrix(cam.getProjectionMatrix());
+				Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
+				getCurrentCam().perspectiveProjection(fov, 1.0f,0.1f,10000000.0f);
+				shader.setViewMatrix(getCurrentCam().getViewMatrix());
+				shader.setProjectionMatrix(getCurrentCam().getProjectionMatrix());
 			}
 			else
 			{
-
-				Gdx.gl.glViewport(Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight()/2);
-				orthoCam.look(new Point3D(cam.eye.x, 20.0f, cam.eye.z), cam.eye, new Vector3D(0.0f,0.0f,-1.0f));
+				Gdx.gl.glViewport(Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
+				orthoCam.look(new Point3D(fpsCam.eye.x, 40.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
 				shader.setViewMatrix(orthoCam.getViewMatrix());
 				shader.setProjectionMatrix(orthoCam.getProjectionMatrix());
-
 			}
 
-			ModelMatrix.main.loadIdentityMatrix();
-			ModelMatrix.main.pushMatrix();
-			ModelMatrix.main.addTranslation(0,3,-1);
-			ModelMatrix.main.addScale(2,2,2);
-			shader.setModelMatrix(ModelMatrix.main.getMatrix());
-			BoxGraphic.drawSolidCube();
-			ModelMatrix.main.popMatrix();
+			shader.setColor(0.0f, 1f, 1f, 1.0f);
 
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(50,0,50);
@@ -210,18 +185,20 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 				ModelMatrix.main.popMatrix();
 
 			}
-			if(viewNum == 1)
-			{
-				shader.setColor(1.0f,0.3f,0.1f,1.0f);
+			if(viewNum == 1 || !fps) {
+				shader.setColor(1f, 1f, 0f, 1.0f);
 				ModelMatrix.main.loadIdentityMatrix();
 				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(cam.eye.x, cam.eye.y, cam.eye.z);
+				ModelMatrix.main.addTranslation(fpsCam.eye.x, fpsCam.eye.y, fpsCam.eye.z);
+				ModelMatrix.main.addScale(0.2f, 0.2f, 0.2f);
 				shader.setModelMatrix(ModelMatrix.main.getMatrix());
-				BoxGraphic.drawSolidCube();
+				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
 			}
+
 			ModelMatrix.main.popMatrix();
 		}
+
 	}
 
 	@Override
@@ -231,6 +208,14 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		update();
 		display();
 
+	}
+
+	public Camera getCurrentCam()
+	{
+		if(fps)
+			return fpsCam;
+		else
+			return thirdPersonCam;
 	}
 
 	public void randomMazeGenerator()
