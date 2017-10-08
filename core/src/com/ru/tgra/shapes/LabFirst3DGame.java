@@ -53,6 +53,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 		orthoCam = new Camera();
 		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
+
+		Gdx.input.setCursorCatched(true);
 	}
 
 	private void input()
@@ -92,6 +94,9 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 			fov += 30.0f * deltaTime;
 		}
 
+		fpsCam.roll(-0.1f * Gdx.input.getDeltaX());
+		fpsCam.pitch(-0.1f * Gdx.input.getDeltaY());
+
 		if(Gdx.input.isKeyJustPressed(Input.Keys.V)) {
 			if(fps)
 				fps = false;
@@ -116,11 +121,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private void update()
 	{
 		input();
-//		float deltaTime = Gdx.graphics.getDeltaTime();
-
-		//angle += 180.0f * deltaTime;
-
-		//do all updates to the game
 	}
 	
 	private void display()

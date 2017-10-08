@@ -25,6 +25,18 @@ public class Camera {
 
     private FloatBuffer matrixBuffer;
 
+    public Vector3D getU() {
+        return u;
+    }
+
+    public Vector3D getV() {
+        return v;
+    }
+
+    public Vector3D getN() {
+        return n;
+    }
+
     public Camera()
     {
         matrixBuffer = BufferUtils.newFloatBuffer(16);
@@ -71,19 +83,18 @@ public class Camera {
     public void slide(float delU, float delV, float delN)
     {
         eye.x += delU*u.x + delV*v.x + delN*n.x;
-        eye.y += delU*u.y + delV*v.y + delN*n.y;
         eye.z += delU*u.z + delV*v.z + delN*n.z;
     }
 
     public void roll(float angle)
     {
-        float radians = angle * (float) Math.PI / 180.0f;
-        float c = (float) Math.cos(radians);
-        float s = (float) Math.sin(radians);
-        Vector3D t = new Vector3D(u.x, u.y, u.z);
+        float radians = angle * (float)Math.PI / 180.0f;
+        float c = (float)Math.cos(radians);
+        float s = -(float)Math.sin(radians);
 
-        u.set(t.x * c - v.x * s, t.y * c - v.y * s, t.z * c - v.z * s);
-        v.set(t.x * s + v.x * c, t.y * s + v.y * c, t.z * s + v.z * c);
+        u.set(c * u.x - s * u.z, u.y, s * u.x + c * u.z);
+        v.set(c * v.x - s * v.z, v.y, s * v.x + c * v.z);
+        n.set(c * n.x - s * n.z, n.y, s * n.x + c * n.z);
     }
 
     public void yaw(float angle)
