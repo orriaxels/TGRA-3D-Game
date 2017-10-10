@@ -15,7 +15,7 @@ public class SphereGraphic {
 	private static int verticesPerCircle = 50;
 
 	
-	private static int stacks = 12;
+	private static int stacks = 24;
 	private static int slices = 24;
 	private static int vertexCount;
 	

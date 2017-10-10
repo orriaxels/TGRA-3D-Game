@@ -83,6 +83,7 @@ public class Camera {
     public void slide(float delU, float delV, float delN)
     {
         eye.x += delU*u.x + delV*v.x + delN*n.x;
+        eye.y += delU*u.y + delV*v.y + delN*n.y;
         eye.z += delU*u.z + delV*v.z + delN*n.z;
     }
 

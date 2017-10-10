@@ -13,25 +13,31 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private boolean fps;
 
 	Shader shader;
+
+	Vector3D vec = new Vector3D(0,0,0);
 	private Camera fpsCam;
 	private Camera thirdPersonCam;
 	private Camera orthoCam;
 
+	MazeGenerator maze;
+
 	private float fov = 90.0f;
+	private float angle;
 
 	//private ModelMatrix modelMatrix;
 
 	@Override
 	public void create ()
     {
-		fps = false;
-	    randomMazeGenerator();
+		fps = true;
+		angle = 0;
 		shader = new Shader();
+
+		maze = new MazeGenerator(10, 10, shader);
 
 		Gdx.input.setInputProcessor(this);
 
 		//COLOR IS SET HERE
-		shader.setColor(0.7f, 0.2f, 0, 1);
 
 		BoxGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
@@ -60,6 +66,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	private void input()
 	{
 		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		angle += 180.0f * deltaTime;
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			fpsCam.yaw(-90.0f * deltaTime);
@@ -113,6 +121,9 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 			System.out.println("fps-y: " + fpsCam.getEye().y);
 			System.out.println("fps-z: " + fpsCam.getEye().z);
 			System.out.println("fps: " + fps);
+			System.out.println();
+			System.out.println("Delta-x: " + Gdx.input.getDeltaX());
+			System.out.println("Delta-y: " + Gdx.input.getDeltaY());
 			System.out.println("-------------------------");
 		}
 
@@ -128,9 +139,10 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		shader.setColor(0.0f, 1f, 1f, 1.0f);
+		vec.set(fpsCam.getN().x, fpsCam.getN().y, fpsCam.getN().z);
+		vec.normalize();
 
-		thirdPersonCam.look(new Point3D(fpsCam.eye.x - 1f, fpsCam.eye.y + 0.5f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0,1,0));
+		thirdPersonCam.look(new Point3D(fpsCam.eye.x + vec.x, 2, fpsCam.eye.z + vec.z), fpsCam.eye, new Vector3D(0,1,0));
 
 		for(int viewNum = 0; viewNum < 2; viewNum++)
 		{
@@ -149,7 +161,19 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 				shader.setProjectionMatrix(orthoCam.getProjectionMatrix());
 			}
 
-			shader.setColor(0.0f, 1f, 1f, 1.0f);
+			float s = (float)Math.sin(angle * Math.PI / 180.0);
+			float c = (float)Math.cos(angle * Math.PI / 180.0);
+
+			shader.setLightPosition(0.0f, 40.0f, 0.0f, 1);
+			shader.setLightDiffuse(1, 1, 1, 1);
+
+			ModelMatrix.main.pushMatrix();
+			ModelMatrix.main.addTranslation(0.0f,2.0f,0.0f);
+			shader.setModelMatrix(ModelMatrix.main.getMatrix());
+			SphereGraphic.drawSolidSphere();
+			ModelMatrix.main.popMatrix();
+
+			maze.drawMaze();
 
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(50,0,50);
@@ -186,7 +210,7 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 			}
 			if(viewNum == 1 || !fps) {
-				shader.setColor(1f, 1f, 0f, 1.0f);
+				shader.setMaterialDiffuse(1f, 1f, 0f, 1.0f);
 				ModelMatrix.main.loadIdentityMatrix();
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(fpsCam.eye.x, fpsCam.eye.y, fpsCam.eye.z);
@@ -195,10 +219,8 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
 			}
-
 			ModelMatrix.main.popMatrix();
 		}
-
 	}
 
 	@Override
@@ -217,245 +239,6 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		else
 			return thirdPersonCam;
 	}
-
-	public void randomMazeGenerator()
-    {
-        List<MazeGeneratorBool> walls = new ArrayList<MazeGeneratorBool>();
-        Set<Integer> numbersToShuffle = new HashSet<Integer>();
-        List<Integer> visited = new ArrayList<Integer>();
-        List<Integer> stack = new ArrayList<Integer>();
-        List<String> nextDirection = new ArrayList<String>();
-        ArrayList<Integer> numbers = new ArrayList<Integer>();
-
-        int row = 10;
-        int col = 10;
-        int count = 0;
-        int sizeOfMaze = row * col;
-        int visits = 0;
-        int currentBlockId;
-        int previousVisit;
-        int end;
-        String directionFrom = "";
-
-        Random randDir = new Random();
-
-        for(int i = 0; i < 10; i++)
-        {
-            numbers.add(i);
-            numbers.add(90+i);
-        }
-
-        for(int i = 1; i < 10; i++)
-        {
-            numbers.add(i * 10);
-            numbers.add((i * 10) + 9);
-        }
-
-        numbersToShuffle.addAll(numbers);
-        numbers.clear();
-        numbers.addAll(numbersToShuffle);
-
-        Collections.sort(numbers);
-        Collections.shuffle(numbers);
-        //currentBlockId = numbers.get(1);
-        visited.add(numbers.get(0));
-        currentBlockId = numbers.get(0);
-
-        while(visits < sizeOfMaze)
-        {
-//            System.out.println("Visit: " + (visits + 1));
-//            System.out.println("Current: " + currentBlockId);
-            MazeGeneratorBool currBlock = new MazeGeneratorBool(0, true, true, true, true);
-            currBlock.setId(currentBlockId);
-            nextDirection.clear();
-            int up = currentBlockId - row;
-            int down = currentBlockId + row;
-            int left = currentBlockId -1;
-            int right = currentBlockId +1;
-
-
-            boolean north = false;
-            boolean south = false;
-            boolean west = false;
-            boolean east = false;
-
-            // check up
-            if(up >= 0 && !visited.contains(up))
-            {
-                north = true;
-                nextDirection.add("up");
-                //currBlock.setNorth(true);
-                //System.out.println("Up: " + up);
-
-            }
-
-            // check down
-            if(down < sizeOfMaze && !visited.contains((down)))
-            {
-                south = true;
-                nextDirection.add("down");
-                //currBlock.setSouth(true);
-                //System.out.println("Down: " + down);
-
-            }
-
-            // check left
-            if(currentBlockId % col != 0 && !visited.contains(left))
-            {
-                west = true;
-                nextDirection.add("left");
-                //currBlock.setEast(true);
-                //System.out.println("Left: " + left);
-            }
-
-            // check right
-            if( (currentBlockId+1) % col != 0 && !visited.contains(right))
-            {
-                east = true;
-                nextDirection.add("right");
-                //currBlock.setWest(true);
-                //System.out.println("Right: " + right);
-            }
-
-            if(!north && !south && !west && !east)
-            {
-                //System.out.println("Stack POP: " + stack.get(stack.size() - 1 ));
-
-                //System.out.println("Stack POP: " + stack.get(stack.size() - 1 ));
-                if(stack.size() > 0)
-                {
-                    stack.remove(stack.size() - 1 );
-                    if(stack.size() > 0)
-                    {
-                        currentBlockId = stack.get(stack.size() - 1 );
-
-//                        for(MazeGeneratorBool wall : walls)
-//                        {
-//                            if(wall.getId() == currentBlockId)
-//                            {
-//
-//                            }
-//                        }
-
-                    }
-                }
-                else
-                {
-                    break;
-                }
-
-
-            }
-            else
-            {
-                int randir = randDir.nextInt(nextDirection.size()) + 0;
-
-                String direction = nextDirection.get(randir);
-                //System.out.println("direction: " + direction);
-
-                if(!direction.equals(""))
-                {
-//                    System.out.println("DirectionFrom: " + directionFrom);
-                    if(directionFrom.equals("south"))
-                    {
-                        currBlock.setSouth(false);
-                    }
-                    else if(directionFrom.equals("north"))
-                    {
-                        currBlock.setNorth(false);
-                    }
-                    else if(directionFrom.equals("west"))
-                    {
-                        currBlock.setWest(false);
-                    }
-                    else if(directionFrom.equals("east"))
-                    {
-                        currBlock.setEast(false);
-                    }
-                }
-
-                if (direction.equals("up"))
-                {
-//                    System.out.println("up");
-                    visited.add(up);
-                    stack.add(up);
-                    currentBlockId = up;
-                    directionFrom = "south";
-                    currBlock.setNorth(false);
-
-                }
-                else if (direction.equals("down"))
-                {
-//                    System.out.println("down");
-                    visited.add(down);
-                    stack.add(down);
-                    currentBlockId = down;
-                    directionFrom = "north";
-                    currBlock.setSouth(false);
-                }
-                else if (direction.equals("left"))
-                {
-//                    System.out.println("left");
-                    visited.add(left);
-                    stack.add(left);
-                    currentBlockId = left;
-                    directionFrom = "east";
-                    currBlock.setWest(false);
-                }
-                else if (direction.equals("right"))
-                {
-//                    System.out.println("right");
-                    visited.add(right);
-                    stack.add(right);
-                    currentBlockId = right;
-                    directionFrom = "west";
-                    currBlock.setEast(false);
-                }
-
-
-                walls.add(currBlock);
-
-//                for(int i = 0; i < visited.size(); i++)
-//                {
-//                    System.out.println(i + ": " + visited.get(i));
-//                }
-
-//                System.out.println();
-
-                visits++;
-            }
-        }
-        int counter = 1;
-        for(MazeGeneratorBool wall : walls)
-        {
-            System.out.println("NR: " + counter);
-            System.out.println("Block nr: " + wall.getId());
-            System.out.println("Walls to build: ");
-
-            if(wall.getNorth())
-            {
-                System.out.println("North");
-            }
-
-            if(wall.getSouth())
-            {
-                System.out.println("South");
-            }
-
-            if(wall.getWest())
-            {
-                System.out.println("West");
-            }
-
-            if(wall.getEast())
-            {
-                System.out.println("East");
-            }
-
-            System.out.println();
-            counter++;
-        }
-    }
 
 	@Override
 	public boolean keyDown(int keycode) {
