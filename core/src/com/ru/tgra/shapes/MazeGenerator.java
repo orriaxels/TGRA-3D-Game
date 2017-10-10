@@ -279,10 +279,11 @@ public class MazeGenerator
             ModelMatrix.main.pushMatrix();
             for(int j = 0; j < row; j++)
             {
+                shader.setLightDiffuse(1, 1, 1, 1);
                 wall = walls.get(wallCounter);
                 if(wall.getNorth())
                 {
-                    shader.setColor(0.0f, 1.0f, 0.0f, 1.0f);
+
                     ModelMatrix.main.pushMatrix();
                     ModelMatrix.main.addTranslation(northWall, 2.5f, eastWall - 5 );
                     ModelMatrix.main.addScale(0.5f, 5, 10);
@@ -293,7 +294,6 @@ public class MazeGenerator
 
                 if(wall.getSouth())
                 {
-                    shader.setColor(0.0f, 0.0f, 1.0f, 1.0f);
                     ModelMatrix.main.pushMatrix();
                     ModelMatrix.main.addTranslation(southWall, 2.5f, eastWall - 5);
                     ModelMatrix.main.addScale(0.5f, 5, 10);
@@ -304,7 +304,6 @@ public class MazeGenerator
 
                 if(wall.getWest())
                 {
-                    shader.setColor(1.0f, 1.0f, 0.0f, 1.0f);
                     ModelMatrix.main.pushMatrix();
                     ModelMatrix.main.addTranslation(northWall - 5, 2.5f, westWall);
                     ModelMatrix.main.addScale(10, 5, 0.5f);
@@ -315,7 +314,6 @@ public class MazeGenerator
 
                 if(wall.getEast())
                 {
-                    shader.setColor(1.0f, 0.0f, 0.0f, 1.0f);
                     ModelMatrix.main.pushMatrix();
                     ModelMatrix.main.addTranslation(northWall - 5 , 2.5f, eastWall);
                     ModelMatrix.main.addScale(10, 5, 0.5f);
