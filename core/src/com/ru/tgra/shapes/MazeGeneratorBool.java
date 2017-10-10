@@ -1,6 +1,6 @@
 package com.ru.tgra.shapes;
 
-public class MazeGeneratorBool
+public class MazeGeneratorBool implements Comparable
 {
     private int id;
     private boolean north;
@@ -69,4 +69,21 @@ public class MazeGeneratorBool
         this.east = east;
     }
 
+    @Override
+    public int compareTo(Object o)
+    {
+        MazeGeneratorBool m = (MazeGeneratorBool) o;
+        if(this.getId() > m.getId())
+        {
+            return 1;
+        }
+        else if(this.getId() < m.getId())
+        {
+            return -1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
 }
