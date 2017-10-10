@@ -31,8 +31,8 @@ public class MazeGenerator
     private boolean north, south, west, east;
 
     private float northWall = 0;
-    private float southWall = -10;
-    private float eastWall = 10;
+    private float southWall = -5;
+    private float eastWall = 5;
     private float westWall = 0;
 
     private int wallCounter = 0;
@@ -285,8 +285,8 @@ public class MazeGenerator
                 {
 
                     ModelMatrix.main.pushMatrix();
-                    ModelMatrix.main.addTranslation(northWall, 2.5f, eastWall - 5 );
-                    ModelMatrix.main.addScale(0.5f, 5, 10);
+                    ModelMatrix.main.addTranslation(northWall, 2.5f, eastWall - 2.5f );
+                    ModelMatrix.main.addScale(0.5f, 5, 5);
                     shader.setModelMatrix(ModelMatrix.main.getMatrix());
                     BoxGraphic.drawSolidCube();
                     ModelMatrix.main.popMatrix();
@@ -295,8 +295,8 @@ public class MazeGenerator
                 if(wall.getSouth())
                 {
                     ModelMatrix.main.pushMatrix();
-                    ModelMatrix.main.addTranslation(southWall, 2.5f, eastWall - 5);
-                    ModelMatrix.main.addScale(0.5f, 5, 10);
+                    ModelMatrix.main.addTranslation(southWall, 2.5f, eastWall - 2.5f);
+                    ModelMatrix.main.addScale(0.5f, 5, 5);
                     shader.setModelMatrix(ModelMatrix.main.getMatrix());
                     BoxGraphic.drawSolidCube();
                     ModelMatrix.main.popMatrix();
@@ -305,8 +305,8 @@ public class MazeGenerator
                 if(wall.getWest())
                 {
                     ModelMatrix.main.pushMatrix();
-                    ModelMatrix.main.addTranslation(northWall - 5, 2.5f, westWall);
-                    ModelMatrix.main.addScale(10, 5, 0.5f);
+                    ModelMatrix.main.addTranslation(northWall - 2.5f, 2.5f, westWall);
+                    ModelMatrix.main.addScale(5, 5, 0.5f);
                     shader.setModelMatrix(ModelMatrix.main.getMatrix());
                     BoxGraphic.drawSolidCube();
                     ModelMatrix.main.popMatrix();
@@ -315,8 +315,8 @@ public class MazeGenerator
                 if(wall.getEast())
                 {
                     ModelMatrix.main.pushMatrix();
-                    ModelMatrix.main.addTranslation(northWall - 5 , 2.5f, eastWall);
-                    ModelMatrix.main.addScale(10, 5, 0.5f);
+                    ModelMatrix.main.addTranslation(northWall - 2.5f , 2.5f, eastWall);
+                    ModelMatrix.main.addScale(5, 5, 0.5f);
                     shader.setModelMatrix(ModelMatrix.main.getMatrix());
                     BoxGraphic.drawSolidCube();
                     ModelMatrix.main.popMatrix();
@@ -324,14 +324,14 @@ public class MazeGenerator
 
 
                 wallCounter++;
-                eastWall += 10;
-                westWall += 10;
+                eastWall += 5;
+                westWall += 5;
             }
             ModelMatrix.main.popMatrix();
 
-            northWall -= 10;
-            southWall -= 10;
-            eastWall = 10;
+            northWall -= 5;
+            southWall -= 5;
+            eastWall = 5;
             westWall = 0;
 
         }
@@ -339,8 +339,8 @@ public class MazeGenerator
         wallCounter = 0;
 
         northWall = 0;
-        southWall = -10;
-        eastWall = 10;
+        southWall = -5;
+        eastWall = 5;
         westWall = 0;
     }
 }
