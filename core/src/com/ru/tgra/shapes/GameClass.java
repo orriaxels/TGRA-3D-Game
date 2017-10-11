@@ -22,6 +22,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private Camera fpsCam;
 	private Camera thirdPersonCam;
 	private Camera orthoCam;
+	private Camera hudCamera;
 
 	MazeGenerator maze;
 
@@ -115,9 +116,12 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		fpsCam.look(new Point3D(-4f, 2f, 4f), new Point3D(0,2,0), new Vector3D(0,1,0));
 
 		thirdPersonCam = new Camera();
+		hudCamera = new Camera();
+		hudCamera.orthographicProjection(-5, 5, -5, 5, 3.0f, 100);
+
 
 		orthoCam = new Camera();
-		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
+		orthoCam.orthographicProjection(-15, 15, -15, 15, 3.0f, 100);
 
 		Gdx.input.setCursorCatched(true);
 	}
@@ -134,24 +138,18 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
 			fpsCam.yaw(90.0f * deltaTime);
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			fpsCam.pitch(-90.0f * deltaTime);
-		}
-		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			fpsCam.pitch(90.0f * deltaTime);
-		}
 
 		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			fpsCam.slide(-3.0f * deltaTime, 0, 0);
+			fpsCam.slide(-8.0f * deltaTime, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			fpsCam.slide(3.0f * deltaTime, 0, 0);
+			fpsCam.slide(8.0f * deltaTime, 0, 0);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			fpsCam.slide(0,0, -3.0f * deltaTime);
+			fpsCam.slide(0,0, -8.0f * deltaTime);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			fpsCam.slide(0,0, 3.0f * deltaTime);
+			fpsCam.slide(0,0, 8.0f * deltaTime);
 		}
 
 		if(Gdx.input.isKeyPressed(Input.Keys.T)) {
@@ -207,16 +205,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
             {
                 if( (fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getNorthWall().getPosX() - 0.25f))
                 {
-                    System.out.println("hit the wall");
                     if( (fpsCam.eye.x) < wall.getNorthWall().getPosX() )
                     {
-                        System.out.println("coming from south");
                         fpsCam.eye.x -= 0.1;
                     }
 
                     if( (fpsCam.eye.x) > wall.getNorthWall().getPosX() )
                     {
-                        System.out.println("coming from north");
                         fpsCam.eye.x += 0.1;
                     }
                 }
@@ -226,16 +221,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
             {
                 if( (fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getSouthWall().getPosX() - 0.25f))
                 {
-                    System.out.println("hit the wall");
                     if( (fpsCam.eye.x) < wall.getSouthWall().getPosX() )
                     {
-                        System.out.println("coming from south");
                         fpsCam.eye.x -= 0.1;
                     }
 
                     if( (fpsCam.eye.x) > wall.getSouthWall().getPosX() )
                     {
-                        System.out.println("coming from north");
                         fpsCam.eye.x += 0.1;
                     }
                 }
@@ -247,13 +239,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.z) < wall.getWestWall().getPosZ() )
                     {
-                        System.out.println("coming from west");
                         fpsCam.eye.z -= 0.1;
                     }
 
                     if( (fpsCam.eye.z) > wall.getWestWall().getPosZ() )
                     {
-                        System.out.println("coming from east");
                         fpsCam.eye.z += 0.1;
                     }
                 }
@@ -264,13 +254,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.z) < wall.getEastWall().getPosZ() )
                     {
-                        System.out.println("coming from west");
                         fpsCam.eye.z -= 0.1;
                     }
 
                     if( (fpsCam.eye.z) > wall.getEastWall().getPosZ() )
                     {
-                        System.out.println("coming from east");
                         fpsCam.eye.z += 0.1;
                     }
                 }
@@ -289,7 +277,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		thirdPersonCam.look(new Point3D(fpsCam.eye.x + vec.x, 2, fpsCam.eye.z + vec.z), fpsCam.eye, new Vector3D(0,1,0));
 
-		for(int viewNum = 0; viewNum < 2; viewNum++)
+
+		for(int viewNum = 0; viewNum < 3; viewNum++)
 		{
 			if(viewNum == 0)
 			{
@@ -298,27 +287,35 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				shader.setViewMatrix(getCurrentCam().getViewMatrix());
 				shader.setProjectionMatrix(getCurrentCam().getProjectionMatrix());
 			}
+			else if(viewNum == 2)
+			{
+				Gdx.gl.glViewport((Gdx.graphics.getWidth() / 2) + 250, Gdx.graphics.getHeight() - 50, Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 12);
+				hudCamera.look(new Point3D(25, 40.0f, 25), new Point3D(25, 0.0f, 25), new Vector3D(0.0f,0.0f,-1.0f));
+				shader.setViewMatrix(hudCamera.getViewMatrix());
+				shader.setProjectionMatrix(hudCamera.getProjectionMatrix());
+			}
 			else
 			{
-				Gdx.gl.glViewport((Gdx.graphics.getWidth() / 2) + 250, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2 - 10);
-				orthoCam.look(new Point3D(fpsCam.eye.x, 10.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
+				Gdx.gl.glViewport((Gdx.graphics.getWidth() / 2) + 250, Gdx.graphics.getHeight() / 2 - 50, Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2 - 6);
+				orthoCam.look(new Point3D(fpsCam.eye.x, 40.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
 				shader.setViewMatrix(orthoCam.getViewMatrix());
 				shader.setProjectionMatrix(orthoCam.getProjectionMatrix());
+
 			}
 
 			maze.drawMaze();
-			
-			//Light 1
+
+			// Light 1
 			shader.setLightPosition(0, 10f,0, 1.0f);
-			shader.setLightColor(1.0f, 0.3f, 0.3f, 1.0f);
+			shader.setLightColor(1f, 1f, 1f, 1.0f);
 
-			//Light 2
-//			shader.setLightPosition2(-100, 10, 100, 1.0f);
-//			shader.setLightColor2(0.3f, 1.0f, 0.3f, 1.0f);
+			// Light 2
+			shader.setLightPosition2(-100, 10, 100, 1.0f);
+			shader.setLightColor2(1f, 1f, 1f, 1.0f);
 
-//			//Light 3
-			shader.setLightPosition3(-100, 10.0f, 100, 1.0f);
-			shader.setLightColor3(1.0f, 0.3f, 0.3f, 1.0f);
+//			// Light 3
+			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
+			shader.setLightColor3(1f, 1f, 1f, 1.0f);
 
 			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
 			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
@@ -328,44 +325,30 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
 			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
 			shader.setMaterialEmission(0, 0, 0, 1);
-			shader.setShininess(30.0f);
+			shader.setShininess(10.0f);
 
 			// Draw the floor
+			shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(-25,0,25);
-			ModelMatrix.main.addScale(50,1,50);
+			ModelMatrix.main.addScale(200,1,200);
 			shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			BoxGraphic.drawSolidCube();
 			ModelMatrix.main.popMatrix();
 
-			int maxLevel = 4;
-			
-			ModelMatrix.main.pushMatrix();
-			for(int level = 0; level < maxLevel; level++)
+			for(int i = 0; i < coins.size(); i++)
 			{
-				ModelMatrix.main.addTranslation(0.55f, 1.0f, -0.55f);
+				shader.setMaterialDiffuse(1f, 1f, 0f, 1.0f);
 				ModelMatrix.main.pushMatrix();
-
-				for(int i = 0; i < maxLevel - level; i++)
-				{
-					ModelMatrix.main.addTranslation(1.1f, 0f, 0f);
-					ModelMatrix.main.pushMatrix();
-					for(int j = 0; j < maxLevel-level; j++)
-					{
-						ModelMatrix.main.addTranslation(0f, 0f, -1.1f);
-						ModelMatrix.main.pushMatrix();
-						ModelMatrix.main.addScale(0.2f, 0.2f, 0.2f);
-
-						shader.setModelMatrix(ModelMatrix.main.getMatrix());
-						SphereGraphic.drawSolidSphere();
-						ModelMatrix.main.popMatrix();
-					}
-					ModelMatrix.main.popMatrix();
-				}
+				ModelMatrix.main.addTranslation(20.5f + i, 5, 24);
+				ModelMatrix.main.addScale(0.2f, 0.5f, 1f);
+				shader.setModelMatrix(ModelMatrix.main.getMatrix());
+				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
-
 			}
-			if(viewNum == 1 || !fps) {
+
+			if(viewNum == 1 || viewNum == 2)
+			{
 				shader.setMaterialDiffuse(1f, 1f, 0f, 1.0f);
 				ModelMatrix.main.loadIdentityMatrix();
 				ModelMatrix.main.pushMatrix();
@@ -374,12 +357,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				shader.setModelMatrix(ModelMatrix.main.getMatrix());
 				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
+
 			}
-			ModelMatrix.main.popMatrix();
 
             for (Coin coin: coins)
             {
                 coin.display();
+
             }
         }
 	}
@@ -388,6 +372,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	public void render () {
 
 		//put the code inside the update and display methods, depending on the nature of the code
+
 		update();
 		display();
 
