@@ -70,7 +70,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
             if(coins.size() == 0)
             {
-                Coin c = new Coin(x, 2.5f, z);
+                Coin c = new Coin(x, 1f, z);
                 coins.add(c);
                 count++;
             }
@@ -87,7 +87,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
                 if(!match)
                 {
-                    Coin c = new Coin(x, 2.5f, z);
+                    Coin c = new Coin(x, 1f, z);
                     coins.add(c);
                     count++;
                 }
@@ -192,6 +192,15 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	{
         float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
+
+		for(int i = 0; i < coins.size(); i++)
+		{
+			if( (fpsCam.eye.z <= coins.get(i).getPosZ() + 1f && fpsCam.eye.z >= coins.get(i).getPosZ() - 1f) && (fpsCam.eye.x <= coins.get(i).getPosX() + 1f && fpsCam.eye.x >= coins.get(i).getPosX() - 1f))
+			{
+				coins.remove(coins.get(i));
+			}
+		}
+
         for (Walls wall: allWalls)
         {
             if(wall.getNorth())

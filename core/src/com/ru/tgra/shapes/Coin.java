@@ -6,7 +6,7 @@ public class Coin
     private float posY;
     private float posZ;
 
-    private boolean pickedUp;
+    public boolean pickedUp;
 
     private Shader shader;
 
@@ -33,7 +33,7 @@ public class Coin
     {
         ModelMatrix.main.pushMatrix();
         ModelMatrix.main.addTranslation(posX, posY, posZ);
-        ModelMatrix.main.addScale(2, 2, 2);
+        ModelMatrix.main.addScale(1, 1, 1);
         shader.setModelMatrix(ModelMatrix.main.getMatrix());
         BoxGraphic.drawSolidCube();
         ModelMatrix.main.popMatrix();
