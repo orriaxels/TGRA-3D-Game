@@ -6,11 +6,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
-public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor {
+public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 	private boolean fps;
+
+	private Random rand;
 
 	Shader shader;
 
@@ -23,8 +27,16 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 	private float fov = 90.0f;
 	private float angle;
+	private int row = 10;
+	private int col = 10;
 
-	//private ModelMatrix modelMatrix;
+	private List<Walls> allWalls;
+	private List<Point3D> allWallsPos;
+
+	//private List<Float> randCoinsPos;
+	private List<Coin> coins;
+
+    private List<Walls> removeWalls;
 
 	@Override
 	public void create ()
@@ -32,8 +44,55 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		fps = true;
 		angle = 0;
 		shader = new Shader();
+        rand = new Random();
+		maze = new MazeGenerator(row, col, shader);
 
-		maze = new MazeGenerator(10, 10, shader);
+		allWalls = maze.getWalls();
+		allWallsPos = new ArrayList<Point3D>();
+		removeWalls = new ArrayList<Walls>();
+		List<Float> randCoinsPos = new ArrayList<Float>();
+		coins = new ArrayList<Coin>();
+
+		for(int i = 1; i < (row*2); i++)
+        {
+            if(i % 2 != 0)
+            {
+                randCoinsPos.add(i * 2.5f);
+            }
+        }
+        int count = 0;
+		boolean match;
+        do
+        {
+            match = false;
+            float x = -randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
+            float z =  randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
+
+            if(coins.size() == 0)
+            {
+                Coin c = new Coin(x, 2.5f, z);
+                coins.add(c);
+                count++;
+            }
+            else
+            {
+                for(Coin coin: coins)
+                {
+                    if(coin.getPosX() == x && coin.getPosZ() == z)
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+
+                if(!match)
+                {
+                    Coin c = new Coin(x, 2.5f, z);
+                    coins.add(c);
+                    count++;
+                }
+            }
+        }while( count < row);
 
 		Gdx.input.setInputProcessor(this);
 
@@ -53,12 +112,12 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		fpsCam = new Camera();
-		fpsCam.look(new Point3D(0f, 2f, 4f), new Point3D(0,2,0), new Vector3D(0,1,0));
+		fpsCam.look(new Point3D(-4f, 2f, 4f), new Point3D(0,2,0), new Vector3D(0,1,0));
 
 		thirdPersonCam = new Camera();
 
 		orthoCam = new Camera();
-		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
+		orthoCam.orthographicProjection(-50, 50, -50, 50, 3.0f, 100);
 
 		Gdx.input.setCursorCatched(true);
 	}
@@ -131,8 +190,101 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 	
 	private void update()
 	{
+        float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
-	}
+        for (Walls wall: allWalls)
+        {
+            if(wall.getNorth())
+            {
+                if( (fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getNorthWall().getPosX() - 0.25f))
+                {
+                    System.out.println("hit the wall");
+                    if( (fpsCam.eye.x) < wall.getNorthWall().getPosX() )
+                    {
+                        System.out.println("coming from south");
+                        fpsCam.eye.x -= 0.1;
+                    }
+
+                    if( (fpsCam.eye.x) > wall.getNorthWall().getPosX() )
+                    {
+                        System.out.println("coming from north");
+                        fpsCam.eye.x += 0.1;
+                    }
+                }
+            }
+
+            if(wall.getSouth())
+            {
+                if( (fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getSouthWall().getPosX() - 0.25f))
+                {
+                    System.out.println("hit the wall");
+                    if( (fpsCam.eye.x) < wall.getSouthWall().getPosX() )
+                    {
+                        System.out.println("coming from south");
+                        fpsCam.eye.x -= 0.1;
+                    }
+
+                    if( (fpsCam.eye.x) > wall.getSouthWall().getPosX() )
+                    {
+                        System.out.println("coming from north");
+                        fpsCam.eye.x += 0.1;
+                    }
+                }
+            }
+
+            if(wall.getWest())
+            {
+                if( (fpsCam.eye.z - 1 <= wall.getWestWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getWestWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getWestWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getWestWall().getPosX() - 2.5f))
+                {
+                    if( (fpsCam.eye.z) < wall.getWestWall().getPosZ() )
+                    {
+                        System.out.println("coming from west");
+                        fpsCam.eye.z -= 0.1;
+                    }
+
+                    if( (fpsCam.eye.z) > wall.getWestWall().getPosZ() )
+                    {
+                        System.out.println("coming from east");
+                        fpsCam.eye.z += 0.1;
+                    }
+                }
+            }
+            if(wall.getEast())
+            {
+                if( (fpsCam.eye.z - 1 <= wall.getEastWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getEastWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getEastWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getEastWall().getPosX() - 2.5f))
+                {
+                    if( (fpsCam.eye.z) < wall.getEastWall().getPosZ() )
+                    {
+                        System.out.println("coming from west");
+                        fpsCam.eye.z -= 0.1;
+                    }
+
+                    if( (fpsCam.eye.z) > wall.getEastWall().getPosZ() )
+                    {
+                        System.out.println("coming from east");
+                        fpsCam.eye.z += 0.1;
+                    }
+                }
+            }
+//            if( (fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x >= wall.getNorthWall().getPosX() - 0.25f))
+//            {
+////                System.out.println("You just hit a north wall");
+//            }
+//            if( (fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x >= wall.getSouthWall().getPosX() - 0.25f))
+//            {
+////                System.out.println("You just hit a south wall");
+//            }
+
+//            if( (fpsCam.eye.z <= 5 && fpsCam.eye.z >= 0) && (fpsCam.eye.x <= 0.25f && fpsCam.eye.x >= -0.25f))
+//            {
+//                System.out.println(fpsCam.eye.z + " : " + fpsCam.eye.x);
+//                System.out.println("You just hit a north wall");
+//            }
+
+
+        }
+
+    }
 	
 	private void display()
 	{
@@ -166,6 +318,13 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 
 			shader.setLightPosition(0.0f, 40.0f, 0.0f, 1);
 			shader.setLightDiffuse(1, 1, 1, 1);
+
+            ModelMatrix.main.pushMatrix();
+            ModelMatrix.main.addTranslation(2.5f, 2.5f ,2.5f);
+            ModelMatrix.main.addScale(0.5f, 5, 5);
+            shader.setModelMatrix(ModelMatrix.main.getMatrix());
+            BoxGraphic.drawSolidCube();
+            ModelMatrix.main.popMatrix();
 
 			ModelMatrix.main.pushMatrix();
 			ModelMatrix.main.addTranslation(0.0f,2.0f,0.0f);
@@ -220,7 +379,12 @@ public class LabFirst3DGame extends ApplicationAdapter implements InputProcessor
 				ModelMatrix.main.popMatrix();
 			}
 			ModelMatrix.main.popMatrix();
-		}
+
+            for (Coin coin: coins)
+            {
+                coin.display();
+            }
+        }
 	}
 
 	@Override
