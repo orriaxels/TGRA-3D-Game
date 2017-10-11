@@ -1,9 +1,9 @@
 package com.ru.tgra.shapes;
 
+import java.nio.FloatBuffer;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-
-import java.nio.FloatBuffer;
 
 public class Shader {
 
@@ -18,13 +18,22 @@ public class Shader {
     private int viewMatrixLoc;
     private int projectionMatrixLoc;
 
-    private int lightPosition;
-    private int lightDiffuseLocation;
-    private int materialDiffuseLocation;
+    private int globalAmbient;
+
+    private int lightPos;
+    private int lightPos2;
+    private int lightPos3;
+    private int lightColor;
+    private int lightColor2;
+    private int lightColor3;
+    private int materialDiffusion;
+    private int matSpecLoc;
+    private int materialShine;
+    private int materialEmission;
 
 
-    public Shader()
-    {
+    public Shader() {
+
         String vertexShaderString;
         String fragmentShaderString;
 
@@ -55,60 +64,111 @@ public class Shader {
 
         modelMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
         viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
-        projectionMatrixLoc	    = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_projectionMatrix");
+        projectionMatrixLoc		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_projectionMatrix");
 
-//        colorLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_color");
 
-        lightPosition				        = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
-        lightDiffuseLocation				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightDiffuse");
-        materialDiffuseLocation				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
+        globalAmbient           = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_globalAmbient");
+        lightPos				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPos");
+        lightPos2			    = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPos2");
+        lightPos3			    = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPos3");
+        lightColor		    	= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor");
+        lightColor2	    		= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor2");
+        lightColor3 			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor3");
+        materialDiffusion       = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
+        matSpecLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");
+        materialShine           = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialShininess");
+        materialEmission        = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialEmission");
 
         Gdx.gl.glUseProgram(renderingProgramID);
     }
 
+    public void setGlobalAmbient(float r, float g, float b, float a){
 
-//    public void setColor(float red, float green, float blue, float alpha)
-//    {
-//        //        Gdx.gl.glUniform4f(colorLoc, red, green, blue, alpha);
-//    }
-
-    public void setLightPosition(float x, float y, float z, float w)
-    {
-        Gdx.gl.glUniform4f(lightPosition, x, y, z, w);
+        Gdx.gl.glUniform4f(globalAmbient, r, g, b, a);
     }
 
-    public void setLightDiffuse(float red, float green, float blue, float alpha)
-    {
-        Gdx.gl.glUniform4f(lightDiffuseLocation, red, green, blue, alpha);
+    public void setLightPosition(float x, float y, float z, float w){
+
+        Gdx.gl.glUniform4f(lightPos, x, y, z, w);
     }
 
-    public void setMaterialDiffuse(float red, float green, float blue, float alpha)
-    {
-        Gdx.gl.glUniform4f(materialDiffuseLocation, red, green, blue, alpha);
+    public void setLightPosition2(float x, float y, float z, float w){
+
+        Gdx.gl.glUniform4f(lightPos2, x, y, z, w);
     }
 
-    public int getVertexPointer()
-    {
+    public void setLightPosition3(float x, float y, float z, float w){
+
+        Gdx.gl.glUniform4f(lightPos3, x, y, z, w);
+    }
+
+    public void setLightColor(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(lightColor, r, g, b, a);
+    }
+
+    public void setLightColor2(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(lightColor2, r, g, b, a);
+    }
+
+    public void setLightColor3(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(lightColor3, r, g, b, a);
+    }
+
+    public void setMaterialDiffuse(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(materialDiffusion, r, g, b, a);
+    }
+
+    public void setMaterialSpecular(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(matSpecLoc, r, g, b, a);
+    }
+
+    public void setMaterialEmission(float r, float g, float b, float a){
+
+        Gdx.gl.glUniform4f(materialEmission, r, g, b, a);
+    }
+
+    public void setShininess(float shine){
+
+        Gdx.gl.glUniform1f(materialShine, shine);
+    }
+
+    public int getVertexPointer() {
+
         return positionLoc;
     }
 
-    public int getNormalPointer()
-    {
+    public int getNormalPointer() {
+
         return normalLoc;
     }
 
-    public void setModelMatrix(FloatBuffer matrix)
-    {
+    public void setModelMatrix(FloatBuffer matrix) {
+
         Gdx.gl.glUniformMatrix4fv(modelMatrixLoc, 1, false, matrix);
     }
 
-    public void setViewMatrix(FloatBuffer matrix)
-    {
+    public void setViewMatrix(FloatBuffer matrix) {
+
         Gdx.gl.glUniformMatrix4fv(viewMatrixLoc, 1, false, matrix);
     }
 
-    public void setProjectionMatrix(FloatBuffer matrix)
-    {
+    public void setProjectionMatrix(FloatBuffer matrix) {
+
         Gdx.gl.glUniformMatrix4fv(projectionMatrixLoc, 1, false, matrix);
     }
 }
+
+
+
+
+
+
+
+
+
+

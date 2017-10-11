@@ -6,8 +6,6 @@ public class Coin
     private float posY;
     private float posZ;
 
-    public boolean pickedUp;
-
     private Shader shader;
 
     public Coin(float posX, float posY, float posZ)
@@ -16,7 +14,6 @@ public class Coin
         this.posY = posY;
         this.posZ = posZ;
         shader = new Shader();
-        pickedUp = false;
     }
 
     public float getPosX()

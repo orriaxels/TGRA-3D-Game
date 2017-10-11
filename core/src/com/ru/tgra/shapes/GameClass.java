@@ -117,7 +117,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		thirdPersonCam = new Camera();
 
 		orthoCam = new Camera();
-		orthoCam.orthographicProjection(-50, 50, -50, 50, 3.0f, 100);
+		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
 
 		Gdx.input.setCursorCatched(true);
 	}
@@ -275,22 +275,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                     }
                 }
             }
-//            if( (fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x >= wall.getNorthWall().getPosX() - 0.25f))
-//            {
-////                System.out.println("You just hit a north wall");
-//            }
-//            if( (fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x >= wall.getSouthWall().getPosX() - 0.25f))
-//            {
-////                System.out.println("You just hit a south wall");
-//            }
-
-//            if( (fpsCam.eye.z <= 5 && fpsCam.eye.z >= 0) && (fpsCam.eye.x <= 0.25f && fpsCam.eye.x >= -0.25f))
-//            {
-//                System.out.println(fpsCam.eye.z + " : " + fpsCam.eye.x);
-//                System.out.println("You just hit a north wall");
-//            }
-
-
         }
 
     }
@@ -309,43 +293,47 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		{
 			if(viewNum == 0)
 			{
-				Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
+				Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 				getCurrentCam().perspectiveProjection(fov, 1.0f,0.1f,10000000.0f);
 				shader.setViewMatrix(getCurrentCam().getViewMatrix());
 				shader.setProjectionMatrix(getCurrentCam().getProjectionMatrix());
 			}
 			else
 			{
-				Gdx.gl.glViewport(Gdx.graphics.getWidth() / 2, 0, Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight());
-				orthoCam.look(new Point3D(fpsCam.eye.x, 40.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
+				Gdx.gl.glViewport((Gdx.graphics.getWidth() / 2) + 250, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2 - 10);
+				orthoCam.look(new Point3D(fpsCam.eye.x, 10.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
 				shader.setViewMatrix(orthoCam.getViewMatrix());
 				shader.setProjectionMatrix(orthoCam.getProjectionMatrix());
 			}
 
-			float s = (float)Math.sin(angle * Math.PI / 180.0);
-			float c = (float)Math.cos(angle * Math.PI / 180.0);
-
-			shader.setLightPosition(0.0f, 40.0f, 0.0f, 1);
-			shader.setLightDiffuse(1, 1, 1, 1);
-
-            ModelMatrix.main.pushMatrix();
-            ModelMatrix.main.addTranslation(2.5f, 2.5f ,2.5f);
-            ModelMatrix.main.addScale(0.5f, 5, 5);
-            shader.setModelMatrix(ModelMatrix.main.getMatrix());
-            BoxGraphic.drawSolidCube();
-            ModelMatrix.main.popMatrix();
-
-			ModelMatrix.main.pushMatrix();
-			ModelMatrix.main.addTranslation(0.0f,2.0f,0.0f);
-			shader.setModelMatrix(ModelMatrix.main.getMatrix());
-			SphereGraphic.drawSolidSphere();
-			ModelMatrix.main.popMatrix();
-
 			maze.drawMaze();
+			
+			//Light 1
+			shader.setLightPosition(0, 10f,0, 1.0f);
+			shader.setLightColor(1.0f, 0.3f, 0.3f, 1.0f);
 
+			//Light 2
+//			shader.setLightPosition2(-100, 10, 100, 1.0f);
+//			shader.setLightColor2(0.3f, 1.0f, 0.3f, 1.0f);
+
+//			//Light 3
+			shader.setLightPosition3(-100, 10.0f, 100, 1.0f);
+			shader.setLightColor3(1.0f, 0.3f, 0.3f, 1.0f);
+
+			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
+			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
+			shader.setMaterialDiffuse(0, 0, 0, 1);
+			shader.setMaterialSpecular(0, 0, 0, 1);
+
+			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
+			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+			shader.setMaterialEmission(0, 0, 0, 1);
+			shader.setShininess(30.0f);
+
+			// Draw the floor
 			ModelMatrix.main.pushMatrix();
-			ModelMatrix.main.addTranslation(50,0,50);
-			ModelMatrix.main.addScale(100,1,100);
+			ModelMatrix.main.addTranslation(-25,0,25);
+			ModelMatrix.main.addScale(50,1,50);
 			shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			BoxGraphic.drawSolidCube();
 			ModelMatrix.main.popMatrix();
