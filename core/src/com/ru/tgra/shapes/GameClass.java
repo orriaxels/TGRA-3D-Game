@@ -71,7 +71,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
             if(coins.size() == 0)
             {
-                Coin c = new Coin(x, 1f, z);
+                Coin c = new Coin(x, 1.0f, z);
                 coins.add(c);
                 count++;
             }
@@ -88,7 +88,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
                 if(!match)
                 {
-                    Coin c = new Coin(x, 1f, z);
+                    Coin c = new Coin(x, 1.0f, z);
                     coins.add(c);
                     count++;
                 }
@@ -193,6 +193,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		for(int i = 0; i < coins.size(); i++)
 		{
+		    coins.get(i).update(deltaTime);
 			if( (fpsCam.eye.z <= coins.get(i).getPosZ() + 1f && fpsCam.eye.z >= coins.get(i).getPosZ() - 1f) && (fpsCam.eye.x <= coins.get(i).getPosX() + 1f && fpsCam.eye.x >= coins.get(i).getPosX() - 1f))
 			{
 				coins.remove(coins.get(i));
@@ -207,12 +208,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.x) < wall.getNorthWall().getPosX() )
                     {
-                        fpsCam.eye.x -= 0.1;
+                        //fpsCam.eye.x -= 0.1;
+                        fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getNorthWall().getPosX() - 0.25);
                     }
 
                     if( (fpsCam.eye.x) > wall.getNorthWall().getPosX() )
                     {
-                        fpsCam.eye.x += 0.1;
+                        //fpsCam.eye.x += 0.1;
+                        fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getNorthWall().getPosX() + 0.25);
                     }
                 }
             }
@@ -223,12 +226,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.x) < wall.getSouthWall().getPosX() )
                     {
-                        fpsCam.eye.x -= 0.1;
+                        //fpsCam.eye.x -= 0.1;
+                        fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getSouthWall().getPosX() - 0.25);
                     }
 
                     if( (fpsCam.eye.x) > wall.getSouthWall().getPosX() )
                     {
-                        fpsCam.eye.x += 0.1;
+//                        fpsCam.eye.x += 0.1;
+                        fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getSouthWall().getPosX() + 0.25);
                     }
                 }
             }
@@ -239,12 +244,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.z) < wall.getWestWall().getPosZ() )
                     {
-                        fpsCam.eye.z -= 0.1;
+                        //fpsCam.eye.z -= 0.1;
+                        fpsCam.eye.z -= (fpsCam.eye.z + 1) - (wall.getWestWall().getPosZ() - 0.25);
                     }
 
                     if( (fpsCam.eye.z) > wall.getWestWall().getPosZ() )
                     {
-                        fpsCam.eye.z += 0.1;
+                        //fpsCam.eye.z += 0.1;
+                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
                     }
                 }
             }
@@ -254,12 +261,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if( (fpsCam.eye.z) < wall.getEastWall().getPosZ() )
                     {
-                        fpsCam.eye.z -= 0.1;
+                        //fpsCam.eye.z -= 0.1;
+                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
                     }
 
                     if( (fpsCam.eye.z) > wall.getEastWall().getPosZ() )
                     {
-                        fpsCam.eye.z += 0.1;
+                        //fpsCam.eye.z += 0.1;
+                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
                     }
                 }
             }
@@ -363,7 +372,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
             for (Coin coin: coins)
             {
                 coin.display();
-
             }
         }
 	}

@@ -82,6 +82,7 @@ public class Wall
 
     public void display()
     {
+        shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
         ModelMatrix.main.pushMatrix();
         ModelMatrix.main.addTranslation(posX, posY, posZ);
         ModelMatrix.main.addScale(scaleX, scaleY, scaleZ);
