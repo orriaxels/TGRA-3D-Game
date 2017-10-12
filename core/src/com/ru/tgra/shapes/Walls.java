@@ -21,6 +21,8 @@ public class Walls implements Comparable
     private Wall westWall;
     private Wall eastWall;
 
+    private Shader shader;
+
     public Walls() {}
 
     public Walls(int id, boolean north, boolean south, boolean west, boolean east)
@@ -35,6 +37,8 @@ public class Walls implements Comparable
         this.southWall = new Wall();
         this.westWall = new Wall();
         this.eastWall = new Wall();
+
+        shader = new Shader();
     }
 
     public int getId()
@@ -158,18 +162,22 @@ public class Walls implements Comparable
     {
         if(getNorth())
         {
+            shader.setMaterialDiffuse(1, 0, 0, 1);
             northWall.display();
         }
         if(getSouth())
         {
+            shader.setMaterialDiffuse(0, 1, 0, 1);
             southWall.display();
         }
         if(getWest())
         {
+            shader.setMaterialDiffuse(0, 0, 1, 1);
             westWall.display();
         }
         if(getEast())
         {
+            shader.setMaterialDiffuse(1, 0, 1, 1);
             eastWall.display();
         }
     }

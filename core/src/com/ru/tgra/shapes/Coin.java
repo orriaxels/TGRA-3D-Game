@@ -56,6 +56,10 @@ public class Coin
 
     public void display()
     {
+        // BoxLight
+        //shader.setLightPositionBoxLight(posX, posY,posZ, 1.0f);
+        //shader.setLightColor(1.0f, 0.0f, 0.0f, 1.0f);
+
         shader.setMaterialDiffuse(1.0f, 0.0f, 0.0f, 1);
         ModelMatrix.main.pushMatrix();
         ModelMatrix.main.addTranslation(posX, posY, posZ);

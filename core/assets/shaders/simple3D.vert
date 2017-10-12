@@ -18,6 +18,7 @@ uniform vec4 u_lightPos3;
 uniform vec4 u_lightColor;
 uniform vec4 u_lightColor2;
 uniform vec4 u_lightColor3;
+uniform vec4 u_lightBoxColor;
 //uniform vec4 u_lightColor4;
 
 uniform vec4 u_globalAmbient;
@@ -87,8 +88,20 @@ void main()
 
 	vec4 lightCalcColor3 = diffuseColor + specularColor;
 
+	// BoxLight
+    s = u_lightBoxColor - position;
+    h = s + v;
 
-	v_color = u_globalAmbient * u_materialDiffuse + u_materialEmission + lightCalcColor1 + lightCalcColor2 + lightCalcColor3;
+    lambert = max(0.0, dot(v_normal, s) / (length(v_normal) * length(s)));
+    phong = max(0.0, dot(v_normal, h) / (length(v_normal) * length(h)));
+
+    diffuseColor = lambert * u_lightBoxColor * u_materialDiffuse;
+    specularColor = pow(phong, u_materialShininess) * u_lightBoxColor * u_materialSpecular;
+
+    vec4 lightCalcColorBox = diffuseColor + specularColor;
+
+
+	v_color = u_globalAmbient * u_materialDiffuse + u_materialEmission + lightCalcColor1 + lightCalcColor2 + lightCalcColor3 + lightCalcColorBox;
 
 	position = u_viewMatrix * position;
 	gl_Position = u_projectionMatrix * position;

@@ -15,6 +15,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private boolean fps;
 
 	private Random rand;
+	private boolean noClip;
 
 	Shader shader;
 
@@ -121,7 +122,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 
 		orthoCam = new Camera();
-		orthoCam.orthographicProjection(-15, 15, -15, 15, 3.0f, 100);
+		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
 
 		Gdx.input.setCursorCatched(true);
 	}
@@ -182,6 +183,10 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			System.out.println("Delta-x: " + Gdx.input.getDeltaX());
 			System.out.println("Delta-y: " + Gdx.input.getDeltaY());
 			System.out.println("-------------------------");
+			if(noClip)
+			    noClip = false;
+			else
+			    noClip = true;
 		}
 
 	}
@@ -199,20 +204,21 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				coins.remove(coins.get(i));
 			}
 		}
-
+        if(noClip)
+        {
         for (Walls wall: allWalls)
         {
-            if(wall.getNorth())
+            if (wall.getNorth())
             {
-                if( (fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getNorthWall().getPosX() - 0.25f))
+                if ((fpsCam.eye.z <= wall.getNorthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getNorthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getNorthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getNorthWall().getPosX() - 0.25f))
                 {
-                    if( (fpsCam.eye.x) < wall.getNorthWall().getPosX() )
+                    if ((fpsCam.eye.x) < wall.getNorthWall().getPosX())
                     {
                         //fpsCam.eye.x -= 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getNorthWall().getPosX() - 0.25);
                     }
 
-                    if( (fpsCam.eye.x) > wall.getNorthWall().getPosX() )
+                    if ((fpsCam.eye.x) > wall.getNorthWall().getPosX())
                     {
                         //fpsCam.eye.x += 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getNorthWall().getPosX() + 0.25);
@@ -220,17 +226,17 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 }
             }
 
-            if(wall.getSouth())
+            if (wall.getSouth())
             {
-                if( (fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getSouthWall().getPosX() - 0.25f))
+                if ((fpsCam.eye.z <= wall.getSouthWall().getPosZ() + 2.5f && fpsCam.eye.z >= wall.getSouthWall().getPosZ() - 2.5f) && (fpsCam.eye.x - 1 <= wall.getSouthWall().getPosX() + 0.25f && fpsCam.eye.x + 1 >= wall.getSouthWall().getPosX() - 0.25f))
                 {
-                    if( (fpsCam.eye.x) < wall.getSouthWall().getPosX() )
+                    if ((fpsCam.eye.x) < wall.getSouthWall().getPosX())
                     {
                         //fpsCam.eye.x -= 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getSouthWall().getPosX() - 0.25);
                     }
 
-                    if( (fpsCam.eye.x) > wall.getSouthWall().getPosX() )
+                    if ((fpsCam.eye.x) > wall.getSouthWall().getPosX())
                     {
 //                        fpsCam.eye.x += 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getSouthWall().getPosX() + 0.25);
@@ -238,40 +244,41 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 }
             }
 
-            if(wall.getWest())
+            if (wall.getWest())
             {
-                if( (fpsCam.eye.z - 1 <= wall.getWestWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getWestWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getWestWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getWestWall().getPosX() - 2.5f))
+                if ((fpsCam.eye.z - 1 <= wall.getWestWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getWestWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getWestWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getWestWall().getPosX() - 2.5f))
                 {
-                    if( (fpsCam.eye.z) < wall.getWestWall().getPosZ() )
+                    if ((fpsCam.eye.z) < wall.getWestWall().getPosZ())
                     {
                         //fpsCam.eye.z -= 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z + 1) - (wall.getWestWall().getPosZ() - 0.25);
                     }
 
-                    if( (fpsCam.eye.z) > wall.getWestWall().getPosZ() )
+                    if ((fpsCam.eye.z) > wall.getWestWall().getPosZ())
                     {
                         //fpsCam.eye.z += 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
                     }
                 }
             }
-            if(wall.getEast())
+            if (wall.getEast())
             {
-                if( (fpsCam.eye.z - 1 <= wall.getEastWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getEastWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getEastWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getEastWall().getPosX() - 2.5f))
+                if ((fpsCam.eye.z - 1 <= wall.getEastWall().getPosZ() + 0.25f && fpsCam.eye.z + 1 >= wall.getEastWall().getPosZ() - 0.25f) && (fpsCam.eye.x <= wall.getEastWall().getPosX() + 2.5f && fpsCam.eye.x >= wall.getEastWall().getPosX() - 2.5f))
                 {
-                    if( (fpsCam.eye.z) < wall.getEastWall().getPosZ() )
+                    if ((fpsCam.eye.z) < wall.getEastWall().getPosZ())
                     {
                         //fpsCam.eye.z -= 0.1;
-                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
+                        fpsCam.eye.z -= (fpsCam.eye.z + 1) - (wall.getEastWall().getPosZ() - 0.25);
                     }
 
-                    if( (fpsCam.eye.z) > wall.getEastWall().getPosZ() )
+                    if ((fpsCam.eye.z) > wall.getEastWall().getPosZ())
                     {
                         //fpsCam.eye.z += 0.1;
-                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
+                        fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getEastWall().getPosZ() + 0.25);
                     }
                 }
             }
+        }
         }
 
     }
@@ -306,7 +313,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			else
 			{
 				Gdx.gl.glViewport((Gdx.graphics.getWidth() / 2) + 250, Gdx.graphics.getHeight() / 2 - 50, Gdx.graphics.getWidth() / 4, Gdx.graphics.getHeight() / 2 - 6);
-				orthoCam.look(new Point3D(fpsCam.eye.x, 40.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
+				orthoCam.look(new Point3D(fpsCam.eye.x, 30.0f, fpsCam.eye.z), fpsCam.eye, new Vector3D(0.0f,0.0f,-1.0f));
 				shader.setViewMatrix(orthoCam.getViewMatrix());
 				shader.setProjectionMatrix(orthoCam.getProjectionMatrix());
 
@@ -315,26 +322,26 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			maze.drawMaze();
 
 			// Light 1
-			shader.setLightPosition(0, 10f,0, 1.0f);
+			shader.setLightPosition(fpsCam.eye.x, 10,fpsCam.eye.z, 1.0f);
 			shader.setLightColor(1f, 1f, 1f, 1.0f);
 
 			// Light 2
-			shader.setLightPosition2(-100, 10, 100, 1.0f);
+			shader.setLightPosition2(24, 20, 24, 1.0f);
 			shader.setLightColor2(1f, 1f, 1f, 1.0f);
+//
+////			// Light 3
+//			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
+//			shader.setLightColor3(1f, 1f, 1f, 1.0f);
 
-//			// Light 3
-			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
-			shader.setLightColor3(1f, 1f, 1f, 1.0f);
-
-			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
-			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
-			shader.setMaterialDiffuse(0, 0, 0, 1);
-			shader.setMaterialSpecular(0, 0, 0, 1);
-
-			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
-			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
-			shader.setMaterialEmission(0, 0, 0, 1);
-			shader.setShininess(10.0f);
+//			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
+//			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
+//			shader.setMaterialDiffuse(0, 0, 0, 1);
+//			shader.setMaterialSpecular(0, 0, 0, 1);
+//
+//			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
+//			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+//			shader.setMaterialEmission(0, 0, 0, 1);
+//			shader.setShininess(10.0f);
 
 			// Draw the floor
 			shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
@@ -347,12 +354,12 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 			for(int i = 0; i < coins.size(); i++)
 			{
-				shader.setMaterialDiffuse(1f, 1f, 0f, 1.0f);
+				shader.setMaterialDiffuse(1f, 0f, 0f, 1.0f);
 				ModelMatrix.main.pushMatrix();
-				ModelMatrix.main.addTranslation(20.5f + i, 5, 24);
-				ModelMatrix.main.addScale(0.2f, 0.5f, 1f);
+				ModelMatrix.main.addTranslation(20.5f + i, 5, 25);
+				ModelMatrix.main.addScale(0.4f, 1.5f, 2f);
 				shader.setModelMatrix(ModelMatrix.main.getMatrix());
-				SphereGraphic.drawSolidSphere();
+				BoxGraphic.drawSolidCube();
 				ModelMatrix.main.popMatrix();
 			}
 
@@ -362,7 +369,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.loadIdentityMatrix();
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(fpsCam.eye.x, fpsCam.eye.y, fpsCam.eye.z);
-				ModelMatrix.main.addScale(0.2f, 0.2f, 0.2f);
+				ModelMatrix.main.addScale(0.8f, 0.8f, 0.8f);
 				shader.setModelMatrix(ModelMatrix.main.getMatrix());
 				SphereGraphic.drawSolidSphere();
 				ModelMatrix.main.popMatrix();
