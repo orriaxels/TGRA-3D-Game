@@ -24,7 +24,7 @@ public class MazeGenerator
     private int row;
     private int col;
     private int currentBlockId;
-    private int startPoint;
+    private int start;
 
     private int northwalls;
     private int southwalls;
@@ -45,6 +45,7 @@ public class MazeGenerator
 
     private int wallCounter = 0;
     private Shader shader;
+    private Point3D startPoint;
 
     public MazeGenerator(int row, int col, Shader shader)
     {
@@ -77,6 +78,7 @@ public class MazeGenerator
         eastwalls = 0;
 
         this.shader = shader;
+        this.startPoint = new Point3D(0,0,0);
 
         fillBorderBlocks();
         getInitializePoint();
@@ -136,7 +138,7 @@ public class MazeGenerator
         Collections.shuffle(numbers);
         currentBlockId = numbers.get(0);
 
-        startPoint = currentBlockId;
+        start = currentBlockId;
     }
 
     private void checkIfVisited()
@@ -282,7 +284,7 @@ public class MazeGenerator
         return walls;
     }
 
-    public int getStartPoint()
+    public Point3D getStartPoint()
     {
         return startPoint;
     }
@@ -327,6 +329,12 @@ public class MazeGenerator
             for(int j = 0; j < row; j++)
             {
                 wall = walls.get(wallCounter);
+
+                if(wall.getId() == start)
+                {
+                   startPoint.set(northWall - 2.5f, 10.5f, eastWall - 2.5f);
+                }
+
                 if(wall.getNorth())
                 {
                     wall.getNorthWall().setWallPos(northWall, 2.5f, eastWall - 2.5f);

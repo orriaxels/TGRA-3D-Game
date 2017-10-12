@@ -34,6 +34,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 	private List<Walls> allWalls;
 	private List<Point3D> allWallsPos;
+	private Point3D startpoint;
 
 	//private List<Float> randCoinsPos;
 	private List<Coin> coins;
@@ -47,13 +48,16 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		angle = 0;
 		shader = new Shader();
         rand = new Random();
-		maze = new MazeGenerator(row, col, shader);
+		//maze = new MazeGenerator(row, col, shader);
 
+		startGame();
+/*
 		allWalls = maze.getWalls();
 		allWallsPos = new ArrayList<Point3D>();
 		removeWalls = new ArrayList<Walls>();
 		List<Float> randCoinsPos = new ArrayList<Float>();
 		coins = new ArrayList<Coin>();
+		startpoint = maze.getStartPoint();
 
 		for(int i = 1; i < (row*2); i++)
         {
@@ -95,7 +99,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 }
             }
         }while( count < row);
-
+*/
 		Gdx.input.setInputProcessor(this);
 
 		//COLOR IS SET HERE
@@ -113,9 +117,9 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
-		fpsCam = new Camera();
-		fpsCam.look(new Point3D(-4f, 2f, 4f), new Point3D(0,2,0), new Vector3D(0,1,0));
-
+/*		fpsCam = new Camera();
+		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
+*/
 		thirdPersonCam = new Camera();
 		hudCamera = new Camera();
 		hudCamera.orthographicProjection(-5, 5, -5, 5, 3.0f, 100);
@@ -125,6 +129,62 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
 
 		Gdx.input.setCursorCatched(true);
+	}
+
+	private void startGame()
+	{
+		maze = new MazeGenerator(row, col, shader);
+
+		allWalls = maze.getWalls();
+		allWallsPos = new ArrayList<Point3D>();
+		removeWalls = new ArrayList<Walls>();
+		List<Float> randCoinsPos = new ArrayList<Float>();
+		coins = new ArrayList<Coin>();
+		startpoint = maze.getStartPoint();
+
+		for(int i = 1; i < (row*2); i++)
+		{
+			if(i % 2 != 0)
+			{
+				randCoinsPos.add(i * 2.5f);
+			}
+		}
+		int count = 0;
+		boolean match;
+		do
+		{
+			match = false;
+			float x = -randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
+			float z =  randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
+
+			if(coins.size() == 0)
+			{
+				Coin c = new Coin(x, 1.0f, z);
+				coins.add(c);
+				count++;
+			}
+			else
+			{
+				for(Coin coin: coins)
+				{
+					if(coin.getPosX() == x && coin.getPosZ() == z)
+					{
+						match = true;
+						break;
+					}
+				}
+
+				if(!match)
+				{
+					Coin c = new Coin(x, 1.0f, z);
+					coins.add(c);
+					count++;
+				}
+			}
+		}while( count < row);
+
+		fpsCam = new Camera();
+		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
 	}
 
 	private void input()
@@ -193,6 +253,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	
 	private void update()
 	{
+		if(coins.isEmpty())
+		{
+			startGame();
+		}
+
         float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
 

@@ -15,6 +15,7 @@ uniform vec4 u_eyePos;
 uniform vec4 u_lightPos;
 uniform vec4 u_lightPos2;
 uniform vec4 u_lightPos3;
+uniform vec4 u_lightBoxPos;
 uniform vec4 u_lightColor;
 uniform vec4 u_lightColor2;
 uniform vec4 u_lightColor3;
@@ -89,7 +90,7 @@ void main()
 	vec4 lightCalcColor3 = diffuseColor + specularColor;
 
 	// BoxLight
-    s = u_lightBoxColor - position;
+    s = u_lightBoxPos - position;
     h = s + v;
 
     lambert = max(0.0, dot(v_normal, s) / (length(v_normal) * length(s)));
