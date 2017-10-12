@@ -330,7 +330,7 @@ public class MazeGenerator
                 if(wall.getNorth())
                 {
                     wall.getNorthWall().setWallPos(northWall, 2.5f, eastWall - 2.5f);
-                    wall.getNorthWall().setWallScale(0.5f, 5, 5);
+                    wall.getNorthWall().setWallScale(0.5f, 5, 5.5f);
 
                     northwalls++;
                 }
@@ -338,7 +338,7 @@ public class MazeGenerator
                 if(wall.getSouth())
                 {
                     wall.getSouthWall().setWallPos(southWall, 2.5f, eastWall - 2.5f);
-                    wall.getSouthWall().setWallScale(0.5f, 5, 5);
+                    wall.getSouthWall().setWallScale(0.5f, 5, 5.5f);
 
                     southwalls++;
                 }
@@ -346,14 +346,14 @@ public class MazeGenerator
                 if(wall.getWest())
                 {
                     wall.getWestWall().setWallPos(northWall - 2.5f, 2.5f, westWall);
-                    wall.getWestWall().setWallScale(5, 5, 0.5f);
+                    wall.getWestWall().setWallScale(5.0f, 5, 0.5f);
                     westwalls++;
                 }
 
                 if(wall.getEast())
                 {
                     wall.getEastWall().setWallPos(northWall - 2.5f, 2.5f, eastWall);
-                    wall.getEastWall().setWallScale(5, 5, 0.5f);
+                    wall.getEastWall().setWallScale(5.0f, 5, 0.5f);
                     eastwalls++;
                 }
 
