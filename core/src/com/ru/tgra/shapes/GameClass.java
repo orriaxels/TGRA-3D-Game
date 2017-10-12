@@ -12,7 +12,6 @@ import java.util.*;
 
 public class GameClass extends ApplicationAdapter implements InputProcessor {
 
-	private boolean fps;
 
 	private Random rand;
 	private boolean noClip;
@@ -21,14 +20,12 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 	Vector3D vec = new Vector3D(0,0,0);
 	private Camera fpsCam;
-	private Camera thirdPersonCam;
 	private Camera orthoCam;
 	private Camera hudCamera;
 
 	MazeGenerator maze;
 
 	private float fov = 90.0f;
-	private float angle;
 	private int row = 10;
 	private int col = 10;
 
@@ -44,65 +41,12 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	@Override
 	public void create ()
     {
-		fps = true;
-		angle = 0;
 		shader = new Shader();
         rand = new Random();
-		//maze = new MazeGenerator(row, col, shader);
 
 		startGame();
-/*
-		allWalls = maze.getWalls();
-		allWallsPos = new ArrayList<Point3D>();
-		removeWalls = new ArrayList<Walls>();
-		List<Float> randCoinsPos = new ArrayList<Float>();
-		coins = new ArrayList<Coin>();
-		startpoint = maze.getStartPoint();
 
-		for(int i = 1; i < (row*2); i++)
-        {
-            if(i % 2 != 0)
-            {
-                randCoinsPos.add(i * 2.5f);
-            }
-        }
-        int count = 0;
-		boolean match;
-        do
-        {
-            match = false;
-            float x = -randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
-            float z =  randCoinsPos.get(rand.nextInt(randCoinsPos.size()) + 0);
-
-            if(coins.size() == 0)
-            {
-                Coin c = new Coin(x, 1.0f, z);
-                coins.add(c);
-                count++;
-            }
-            else
-            {
-                for(Coin coin: coins)
-                {
-                    if(coin.getPosX() == x && coin.getPosZ() == z)
-                    {
-                        match = true;
-                        break;
-                    }
-                }
-
-                if(!match)
-                {
-                    Coin c = new Coin(x, 1.0f, z);
-                    coins.add(c);
-                    count++;
-                }
-            }
-        }while( count < row);
-*/
 		Gdx.input.setInputProcessor(this);
-
-		//COLOR IS SET HERE
 
 		BoxGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
@@ -117,13 +61,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
-/*		fpsCam = new Camera();
-		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
-*/
-		thirdPersonCam = new Camera();
 		hudCamera = new Camera();
 		hudCamera.orthographicProjection(-5, 5, -5, 5, 3.0f, 100);
-
 
 		orthoCam = new Camera();
 		orthoCam.orthographicProjection(-10, 10, -10, 10, 3.0f, 100);
@@ -181,7 +120,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 					count++;
 				}
 			}
-		}while( count < row);
+        }while(count < row);
 
 		fpsCam = new Camera();
 		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
@@ -190,8 +129,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private void input()
 	{
 		float deltaTime = Gdx.graphics.getDeltaTime();
-
-		angle += 180.0f * deltaTime;
 
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			fpsCam.yaw(-90.0f * deltaTime);
@@ -223,25 +160,12 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		fpsCam.roll(-0.1f * Gdx.input.getDeltaX());
 		fpsCam.pitch(-0.1f * Gdx.input.getDeltaY());
 
-		if(Gdx.input.isKeyJustPressed(Input.Keys.V)) {
-			if(fps)
-				fps = false;
-			else
-				fps = true;
-		}
 
 		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			System.out.println("3rd-x: " + thirdPersonCam.getEye().x);
-			System.out.println("3rd-y: " + thirdPersonCam.getEye().y);
-			System.out.println("3rd-z: " + thirdPersonCam.getEye().z);
-			System.out.println();
 			System.out.println("fps-x: " + fpsCam.getEye().x);
 			System.out.println("fps-y: " + fpsCam.getEye().y);
 			System.out.println("fps-z: " + fpsCam.getEye().z);
-			System.out.println("fps: " + fps);
 			System.out.println();
-			System.out.println("Delta-x: " + Gdx.input.getDeltaX());
-			System.out.println("Delta-y: " + Gdx.input.getDeltaY());
 			System.out.println("-------------------------");
 			if(noClip)
 			    noClip = false;
@@ -269,7 +193,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				coins.remove(coins.get(i));
 			}
 		}
-        if(noClip)
+        if(!noClip)
         {
         for (Walls wall: allWalls)
         {
@@ -279,13 +203,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if ((fpsCam.eye.x) < wall.getNorthWall().getPosX())
                     {
-                        //fpsCam.eye.x -= 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getNorthWall().getPosX() - 0.25);
                     }
 
                     if ((fpsCam.eye.x) > wall.getNorthWall().getPosX())
                     {
-                        //fpsCam.eye.x += 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getNorthWall().getPosX() + 0.25);
                     }
                 }
@@ -297,13 +219,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if ((fpsCam.eye.x) < wall.getSouthWall().getPosX())
                     {
-                        //fpsCam.eye.x -= 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x + 1) - (wall.getSouthWall().getPosX() - 0.25);
                     }
 
                     if ((fpsCam.eye.x) > wall.getSouthWall().getPosX())
                     {
-//                        fpsCam.eye.x += 0.1;
                         fpsCam.eye.x -= (fpsCam.eye.x - 1) - (wall.getSouthWall().getPosX() + 0.25);
                     }
                 }
@@ -315,13 +235,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if ((fpsCam.eye.z) < wall.getWestWall().getPosZ())
                     {
-                        //fpsCam.eye.z -= 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z + 1) - (wall.getWestWall().getPosZ() - 0.25);
                     }
 
                     if ((fpsCam.eye.z) > wall.getWestWall().getPosZ())
                     {
-                        //fpsCam.eye.z += 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getWestWall().getPosZ() + 0.25);
                     }
                 }
@@ -332,13 +250,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
                 {
                     if ((fpsCam.eye.z) < wall.getEastWall().getPosZ())
                     {
-                        //fpsCam.eye.z -= 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z + 1) - (wall.getEastWall().getPosZ() - 0.25);
                     }
 
                     if ((fpsCam.eye.z) > wall.getEastWall().getPosZ())
                     {
-                        //fpsCam.eye.z += 0.1;
                         fpsCam.eye.z -= (fpsCam.eye.z - 1) - (wall.getEastWall().getPosZ() + 0.25);
                     }
                 }
@@ -353,20 +269,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		vec.set(fpsCam.getN().x, fpsCam.getN().y, fpsCam.getN().z);
-		vec.normalize();
-
-		thirdPersonCam.look(new Point3D(fpsCam.eye.x + vec.x, 2, fpsCam.eye.z + vec.z), fpsCam.eye, new Vector3D(0,1,0));
-
-
 		for(int viewNum = 0; viewNum < 3; viewNum++)
 		{
 			if(viewNum == 0)
 			{
 				Gdx.gl.glViewport(0,0,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-				getCurrentCam().perspectiveProjection(fov, 1.0f,0.1f,10000000.0f);
-				shader.setViewMatrix(getCurrentCam().getViewMatrix());
-				shader.setProjectionMatrix(getCurrentCam().getProjectionMatrix());
+				fpsCam.perspectiveProjection(fov, 1.0f,0.1f,10000000.0f);
+				shader.setViewMatrix(fpsCam.getViewMatrix());
+				shader.setProjectionMatrix(fpsCam.getProjectionMatrix());
 			}
 			else if(viewNum == 2)
 			{
@@ -393,20 +303,20 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			// Light 2
 			shader.setLightPosition2(24, 20, 24, 1.0f);
 			shader.setLightColor2(1f, 1f, 1f, 1.0f);
-//
-////			// Light 3
-//			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
-//			shader.setLightColor3(1f, 1f, 1f, 1.0f);
 
-//			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
-//			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
-//			shader.setMaterialDiffuse(0, 0, 0, 1);
-//			shader.setMaterialSpecular(0, 0, 0, 1);
-//
-//			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
-//			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
-//			shader.setMaterialEmission(0, 0, 0, 1);
-//			shader.setShininess(10.0f);
+			// Light 3
+			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
+			shader.setLightColor3(1f, 1f, 1f, 1.0f);
+
+			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
+			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
+			shader.setMaterialDiffuse(0, 0, 0, 1);
+			shader.setMaterialSpecular(0, 0, 0, 1);
+
+			shader.setMaterialDiffuse(0.3f, 0.3f, 0.7f, 1.0f);
+			shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+			shader.setMaterialEmission(0, 0, 0, 1);
+			shader.setShininess(10.0f);
 
 			// Draw the floor
 			shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
@@ -419,6 +329,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 			for(int i = 0; i < coins.size(); i++)
 			{
+                coins.get(i).display();
 				shader.setMaterialDiffuse(1f, 0f, 0f, 1.0f);
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(20.5f + i, 5, 25);
@@ -440,11 +351,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 				ModelMatrix.main.popMatrix();
 
 			}
-
-            for (Coin coin: coins)
-            {
-                coin.display();
-            }
         }
 	}
 
@@ -452,18 +358,9 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	public void render () {
 
 		//put the code inside the update and display methods, depending on the nature of the code
-
 		update();
 		display();
 
-	}
-
-	public Camera getCurrentCam()
-	{
-		if(fps)
-			return fpsCam;
-		else
-			return thirdPersonCam;
 	}
 
 	@Override
