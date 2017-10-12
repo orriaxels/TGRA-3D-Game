@@ -1,12 +1,15 @@
 package com.ru.tgra.shapes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g3d.Model;
 
 public class Coin
 {
     private float posX;
     private float posY;
     private float posZ;
+
+    private float rotation;
 
     private Shader shader;
     public boolean boxMax;
@@ -18,6 +21,7 @@ public class Coin
         this.posZ = posZ;
         shader = new Shader();
         boxMax = false;
+        this.rotation = 0.0f;
     }
 
     public float getPosX()
@@ -51,6 +55,7 @@ public class Coin
             posY += 0.5 * deltatime;
         }
 
+        this.rotation += 90* Gdx.graphics.getDeltaTime();
 
     }
 
@@ -64,6 +69,8 @@ public class Coin
         ModelMatrix.main.pushMatrix();
         ModelMatrix.main.addTranslation(posX, posY, posZ);
         ModelMatrix.main.addScale(1, 1, 1);
+        ModelMatrix.main.addRotationZ(rotation);
+        ModelMatrix.main.addRotationX(rotation);
         shader.setModelMatrix(ModelMatrix.main.getMatrix());
         BoxGraphic.drawSolidCube();
         ModelMatrix.main.popMatrix();

@@ -141,6 +141,11 @@ public class MazeGenerator
         start = currentBlockId;
     }
 
+    public int getStart()
+    {
+        return start;
+    }
+
     private void checkIfVisited()
     {
         if(!visited.contains(currentBlockId))

@@ -28,6 +28,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private float fov = 90.0f;
 	private int row = 10;
 	private int col = 10;
+	private int start;
+	private int enemyStart = 0;
 
 	private List<Walls> allWalls;
 	private List<Point3D> allWallsPos;
@@ -37,6 +39,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private List<Coin> coins;
 
     private List<Walls> removeWalls;
+
+    private Enemy enemy;
 
 	@Override
 	public void create ()
@@ -80,6 +84,17 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		List<Float> randCoinsPos = new ArrayList<Float>();
 		coins = new ArrayList<Coin>();
 		startpoint = maze.getStartPoint();
+		start = maze.getStart();
+
+		do
+		{
+			enemyStart = rand.nextInt(99) + 0;
+		} while( enemyStart == 0 || enemyStart == start);
+
+		System.out.println(enemyStart);
+		enemy = new Enemy(-2.5f, 3, 2.5f, maze.getWalls(), enemyStart);
+
+
 
 		for(int i = 1; i < (row*2); i++)
 		{
@@ -182,9 +197,11 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			startGame();
 		}
 
+
         float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
 
+		enemy.update(deltaTime);
 		for(int i = 0; i < coins.size(); i++)
 		{
 		    coins.get(i).update(deltaTime);
@@ -269,6 +286,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+
+
 		for(int viewNum = 0; viewNum < 3; viewNum++)
 		{
 			if(viewNum == 0)
@@ -296,6 +315,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 			maze.drawMaze();
 
+			enemy.display();
+
 			// Light 1
 			shader.setLightPosition(fpsCam.eye.x, 10,fpsCam.eye.z, 1.0f);
 			shader.setLightColor(1f, 1f, 1f, 1.0f);
@@ -307,6 +328,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			// Light 3
 			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
 			shader.setLightColor3(1f, 1f, 1f, 1.0f);
+
 
 			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
 			shader.setMaterialEmission(1.0f, 0f, 0f, 1.0f);
