@@ -48,11 +48,14 @@ public class Enemy
         moving = false;
         tempZ = 2.5f;
         tempX = -2.5f;
-//        System.out.println("wALLE : " + wall.getId());
-//        System.out.println(startId);
-//        this.posX = wall.getNorthWall().getPosX() - 2.5f;
-//        this.posZ = wall.getNorthWall().getPosZ() - 2.5f;
-//        this.posY = 1.5f;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosZ() {
+        return posZ;
     }
 
     public void update(float deltaTime)
@@ -60,60 +63,28 @@ public class Enemy
         if(!moving)
         {
             wallBlock = walls.get(start);
-//            int up = wallBlock.getId() + 10;
-//            int south = wallBlock.getId() - 10;
-//            int west = wallBlock.getId() - 1;
-//            int east = wallBlock.getId() +1;
 
             if(!wallBlock.getNorth() && lastDirection != 1)
             {
                 direction.add(1);
-                System.out.println("GOING NORTH");
             }
 
 
             if(!(wallBlock.getId() + 10 > 99) && !walls.get(wallBlock.getId() + 10).getNorth() && lastDirection != 2)
             {
                 direction.add(2);
-                System.out.println("GOING SOUTH");
             }
 
             if(!wallBlock.getWest() && lastDirection != 3)
             {
                 direction.add(3);
-                System.out.println("GOING WEST");
             }
 
             if(!wallBlock.getEast() && !walls.get(wallBlock.getId() + 1).getWest() && lastDirection != 4)
             {
                 direction.add(4);
-                System.out.println("GOING EAST");
             }
 
-            System.out.println(direction.size());
-
-//            if(direction.size() == 2 && lastDirection != 4)
-//            {
-//                for(int i = 0; i < direction.size(); i++)
-//                {
-//                    System.out.println("forlykkja");
-//                    if(direction.get(i) != lastDirection)
-//                    {
-//                        wayToGo = direction.get(i);
-//                        System.out.println("Direction cho: " + direction.get(i));
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                int choose = rand.nextInt(direction.size()) + 0;
-//                System.out.println("Way to go: " + direction.get(choose));
-//                wayToGo = direction.get(choose);
-//                direction.clear();
-//                tempX = this.posX;
-//                tempZ = this.posZ;
-//                moving = true;
-//            }
 
             if(direction.size() == 0)
             {

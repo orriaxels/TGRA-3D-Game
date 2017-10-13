@@ -337,7 +337,7 @@ public class MazeGenerator
 
                 if(wall.getId() == start)
                 {
-                   startPoint.set(northWall - 2.5f, 10.5f, eastWall - 2.5f);
+                   startPoint.set(-2.5f, 10.5f, 7.5f);
                 }
 
                 if(wall.getNorth())

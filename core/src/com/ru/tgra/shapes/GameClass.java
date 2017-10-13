@@ -15,6 +15,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 	private Random rand;
 	private boolean noClip;
+	private boolean enemyCollision;
 
 	Shader shader;
 
@@ -30,6 +31,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private int col = 10;
 	private int start;
 	private int enemyStart = 0;
+
 
 	private List<Walls> allWalls;
 	private List<Point3D> allWallsPos;
@@ -85,15 +87,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		coins = new ArrayList<Coin>();
 		startpoint = maze.getStartPoint();
 		start = maze.getStart();
+		enemy = new Enemy(-2.5f, 3, 2.5f, maze.getWalls(), enemyStart);
+
 
 		do
 		{
 			enemyStart = rand.nextInt(99) + 0;
 		} while( enemyStart == 0 || enemyStart == start);
-
-		System.out.println(enemyStart);
-		enemy = new Enemy(-2.5f, 3, 2.5f, maze.getWalls(), enemyStart);
-
 
 
 		for(int i = 1; i < (row*2); i++)
@@ -139,6 +139,16 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		fpsCam = new Camera();
 		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
+
+	}
+
+	private void restart()
+	{
+		enemy = null;
+		maze = null;
+		allWalls.clear();
+		coins.clear();
+		allWallsPos.clear();
 	}
 
 	private void input()
@@ -194,14 +204,22 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	{
 		if(coins.isEmpty())
 		{
+			restart();
+			startGame();
+		}
+
+		if( (enemy.posX - 0.75f <= fpsCam.eye.x + 1f && enemy.posZ + 0.75f >= fpsCam.eye.z - 1) && (enemy.posX + 0.75f >= fpsCam.eye.x - 1 && enemy.posZ - 0.75f <= fpsCam.eye.z + 1) )
+		{
+			restart();
 			startGame();
 		}
 
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
-
 		enemy.update(deltaTime);
+
+
 		for(int i = 0; i < coins.size(); i++)
 		{
 		    coins.get(i).update(deltaTime);
@@ -312,8 +330,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	{
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-
 
 		for(int viewNum = 0; viewNum < 3; viewNum++)
 		{
