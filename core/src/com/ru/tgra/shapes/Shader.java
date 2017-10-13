@@ -99,11 +99,6 @@ public class Shader {
         Gdx.gl.glUniform4f(lightPos2, x, y, z, w);
     }
 
-    public void setLightPosition3(float x, float y, float z, float w){
-
-        Gdx.gl.glUniform4f(lightPos3, x, y, z, w);
-    }
-
     public void setLightColor(float r, float g, float b, float a){
 
         Gdx.gl.glUniform4f(lightColor, r, g, b, a);
@@ -112,11 +107,6 @@ public class Shader {
     public void setLightColor2(float r, float g, float b, float a){
 
         Gdx.gl.glUniform4f(lightColor2, r, g, b, a);
-    }
-
-    public void setLightColor3(float r, float g, float b, float a){
-
-        Gdx.gl.glUniform4f(lightColor3, r, g, b, a);
     }
 
     public void setMaterialDiffuse(float r, float g, float b, float a){

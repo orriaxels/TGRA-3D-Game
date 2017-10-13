@@ -6,7 +6,6 @@ public class MazeGenerator
 {
     private List<Integer> visited;
     private List<String> nextDirection;
-    private List<Vector3D> allPos;
 
     private List<Walls> walls;
     private ArrayList<Integer> numbers;
@@ -15,7 +14,7 @@ public class MazeGenerator
 
     private Random randDir = new Random();
 
-    Wall nWall;
+    private Wall nWall;
 
     private Walls currBlock;
     private Walls wall;
@@ -44,7 +43,6 @@ public class MazeGenerator
     private float westWall = 0;
 
     private int wallCounter = 0;
-    private Shader shader;
     private Point3D startPoint;
 
     public MazeGenerator(int row, int col, Shader shader)
@@ -77,16 +75,13 @@ public class MazeGenerator
         westwalls = 0;
         eastwalls = 0;
 
-        this.shader = shader;
         this.startPoint = new Point3D(0,0,0);
 
         fillBorderBlocks();
         getInitializePoint();
         generate();
         createCoordinates();
-        System.out.println("n: " + northwalls + ", s: " + southwalls + ", e: " + eastwalls + ", w: " + westwalls);
         fixDuplicates();
-        System.out.println("n: " + northwalls + ", s: " + southwalls + ", e: " + eastwalls + ", w: " + westwalls);
     }
 
 
@@ -335,11 +330,6 @@ public class MazeGenerator
             {
                 wall = walls.get(wallCounter);
 
-                if(wall.getId() == start)
-                {
-                   startPoint.set(-2.5f, 10.5f, 7.5f);
-                }
-
                 if(wall.getNorth())
                 {
                     wall.getNorthWall().setWallPos(northWall, 2.5f, eastWall - 2.5f);
@@ -387,70 +377,10 @@ public class MazeGenerator
 
     public void drawMaze()
     {
-        //walls = maze.getWalls();
         Collections.sort(walls);
         for (Walls drawWall : walls)
         {
             drawWall.display();
         }
-
-//        ModelMatrix.main.pushMatrix();
-//        for(int i = 0; i < row; i++)
-//        {
-//            ModelMatrix.main.pushMatrix();
-//            for(int j = 0; j < row; j++)
-//            {
-//                shader.setLightDiffuse(1, 1, 1, 1);
-//                wall = walls.get(wallCounter);
-//                if(wall.getNorth())
-//                {
-////                    wall.getNorthWall().setWallPos(northWall, 2.5f, eastWall - 2.5f);
-////                    wall.getNorthWall().setWallScale(0.5f, 5, 5);
-//
-//                    wall.display();
-//                }
-//
-//                if(wall.getSouth())
-//                {
-////                    wall.getSouthWall().setWallPos(southWall, 2.5f, eastWall - 2.5f);
-////                    wall.getSouthWall().setWallScale(0.5f, 5, 5);
-//
-//                    wall.display();
-//                }
-//
-//                if(wall.getWest())
-//                {
-////                    wall.getWestWall().setWallPos(northWall - 2.5f, 2.5f, westWall);
-////                    wall.getWestWall().setWallScale(5, 5, 0.5f);
-//
-//                    wall.display();
-//                }
-//
-//                if(wall.getEast())
-//                {
-////                    wall.getEastWall().setWallPos(northWall - 2.5f, 2.5f, eastWall);
-////                    wall.getEastWall().setWallScale(5, 5, 0.5f);
-//
-//                    wall.display();
-//                }
-//                wallCounter++;
-////                eastWall += 5;
-////                westWall += 5;
-//            }
-//            ModelMatrix.main.popMatrix();
-//
-////            northWall -= 5;
-////            southWall -= 5;
-////            eastWall = 5;
-////            westWall = 0;
-//
-//        }
-//        ModelMatrix.main.popMatrix();
-//        wallCounter = 0;
-//
-////        northWall = 0;
-////        southWall = -5;
-////        eastWall = 5;
-////        westWall = 0;
     }
 }

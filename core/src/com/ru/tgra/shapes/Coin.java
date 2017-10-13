@@ -41,7 +41,7 @@ public class Coin
         {
             boxMax = true;
         }
-        else if(posY <= 1)
+        else if(posY <= 1.5f)
         {
             boxMax = false;
         }
@@ -56,13 +56,12 @@ public class Coin
         }
 
         this.rotation += 90* Gdx.graphics.getDeltaTime();
-
     }
 
     public void display()
     {
 
-        shader.setMaterialDiffuse(0.0f, 0.0f, 1.0f, 1);
+        shader.setMaterialDiffuse(0.0f, 0.5f, 0.0f, 1);
         ModelMatrix.main.pushMatrix();
         ModelMatrix.main.addTranslation(posX, posY, posZ);
         ModelMatrix.main.addScale(1, 1, 1);

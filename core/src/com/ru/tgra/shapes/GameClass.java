@@ -17,14 +17,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private boolean noClip;
 	private boolean enemyCollision;
 
-	Shader shader;
+	private Shader shader;
 
-	Vector3D vec = new Vector3D(0,0,0);
 	private Camera fpsCam;
 	private Camera orthoCam;
 	private Camera hudCamera;
 
-	MazeGenerator maze;
+	private MazeGenerator maze;
 
 	private float fov = 90.0f;
 	private int row = 10;
@@ -37,12 +36,14 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 	private List<Point3D> allWallsPos;
 	private Point3D startpoint;
 
-	//private List<Float> randCoinsPos;
 	private List<Coin> coins;
 
     private List<Walls> removeWalls;
 
-    private Enemy enemy;
+    private Enemy enemy1;
+    private Enemy enemy2;
+	private Enemy enemy3;
+	private Enemy enemy4;
 
 	@Override
 	public void create ()
@@ -56,8 +57,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 		BoxGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
-		SincGraphic.create(shader.getVertexPointer());
-		CoordFrameGraphic.create(shader.getVertexPointer());
 
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -87,7 +86,10 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 		coins = new ArrayList<Coin>();
 		startpoint = maze.getStartPoint();
 		start = maze.getStart();
-		enemy = new Enemy(-2.5f, 3, 2.5f, maze.getWalls(), enemyStart);
+		enemy1 = new Enemy(-2.5f, 3, 2.5f, maze.getWalls(), 0);
+		enemy2 = new Enemy(-2.5f, 3, 47.5f, maze.getWalls(), 9);
+		enemy3 = new Enemy(-47.5f, 3, 2.5f, maze.getWalls(), 90);
+		enemy4 = new Enemy(-47.5f, 3, 47.5f, maze.getWalls(), 99);
 
 
 		do
@@ -138,13 +140,16 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
         }while(count < row);
 
 		fpsCam = new Camera();
-		fpsCam.look(startpoint, new Point3D(0,2,0), new Vector3D(0,1,0));
+		fpsCam.look(new Point3D(-27.5f, 2.5f, 27.5f), new Point3D(0,2,0), new Vector3D(0,1,0));
 
 	}
 
 	private void restart()
 	{
-		enemy = null;
+		enemy1 = null;
+		enemy2 = null;
+		enemy3 = null;
+		enemy4 = null;
 		maze = null;
 		allWalls.clear();
 		coins.clear();
@@ -187,11 +192,6 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 
 		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			System.out.println("fps-x: " + fpsCam.getEye().x);
-			System.out.println("fps-y: " + fpsCam.getEye().y);
-			System.out.println("fps-z: " + fpsCam.getEye().z);
-			System.out.println();
-			System.out.println("-------------------------");
 			if(noClip)
 			    noClip = false;
 			else
@@ -208,16 +208,18 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			startGame();
 		}
 
-		if( (enemy.posX - 0.75f <= fpsCam.eye.x + 1f && enemy.posZ + 0.75f >= fpsCam.eye.z - 1) && (enemy.posX + 0.75f >= fpsCam.eye.x - 1 && enemy.posZ - 0.75f <= fpsCam.eye.z + 1) )
-		{
-			restart();
-			startGame();
-		}
+		enemyCollision(enemy1);
+		enemyCollision(enemy2);
+		enemyCollision(enemy3);
+		enemyCollision(enemy4);
 
 
         float deltaTime = Gdx.graphics.getDeltaTime();
 		input();
-		enemy.update(deltaTime);
+		enemy1.update(deltaTime);
+		enemy2.update(deltaTime);
+		enemy3.update(deltaTime);
+		enemy4.update(deltaTime);
 
 
 		for(int i = 0; i < coins.size(); i++)
@@ -357,10 +359,13 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 			maze.drawMaze();
 
-			enemy.display();
+			enemy1.display();
+			enemy2.display();
+			enemy3.display();
+			enemy4.display();
 
 			// Light 1
-			shader.setLightPosition(fpsCam.eye.x, 10,fpsCam.eye.z, 1.0f);
+			shader.setLightPosition(fpsCam.eye.x, fpsCam.eye.y + 10, fpsCam.eye.z, 1.0f);
 			shader.setLightColor(1f, 1f, 1f, 1.0f);
 
 			// Light 2
@@ -368,8 +373,8 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			shader.setLightColor2(1f, 1f, 1f, 1.0f);
 
 			// Light 3
-			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
-			shader.setLightColor3(1f, 1f, 1f, 1.0f);
+//			shader.setLightPosition3(0, 10.0f, 100, 1.0f);
+//			shader.setLightColor3(1f, 1f, 1f, 1.0f);
 
 
 			shader.setGlobalAmbient(0.2f, 0.2f, 0.2f, 1);
@@ -385,7 +390,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			// Draw the floor
 			shader.setMaterialDiffuse(0.5f, 0.5f, 0.5f, 1.0f);
 			ModelMatrix.main.pushMatrix();
-			ModelMatrix.main.addTranslation(-25,0,25);
+			ModelMatrix.main.addTranslation(-25,-0.5f,25);
 			ModelMatrix.main.addScale(200,1,200);
 			shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			BoxGraphic.drawSolidCube();
@@ -394,7 +399,7 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 			for(int i = 0; i < coins.size(); i++)
 			{
                 coins.get(i).display();
-				shader.setMaterialDiffuse(1f, 0f, 0f, 1.0f);
+				shader.setMaterialDiffuse(0.0f, 0.5f, 0f, 1.0f);
 				ModelMatrix.main.pushMatrix();
 				ModelMatrix.main.addTranslation(20.5f + i, 5, 25);
 				ModelMatrix.main.addScale(0.4f, 1.5f, 2f);
@@ -416,6 +421,15 @@ public class GameClass extends ApplicationAdapter implements InputProcessor {
 
 			}
         }
+	}
+
+	private void enemyCollision(Enemy enemy)
+	{
+		if( (enemy.posX - 0.75f <= fpsCam.eye.x + 1f && enemy.posZ + 0.75f >= fpsCam.eye.z - 1) && (enemy.posX + 0.75f >= fpsCam.eye.x - 1 && enemy.posZ - 0.75f <= fpsCam.eye.z + 1) )
+		{
+			restart();
+			startGame();
+		}
 	}
 
 	@Override

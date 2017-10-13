@@ -9,7 +9,6 @@ import java.util.Random;
 
 public class Enemy
 {
-    private Point3D startPosition;
     private Shader shader;
     private List<Walls> walls;
     private int start;
@@ -27,35 +26,21 @@ public class Enemy
     float posY;
     float posZ;
 
-    boolean north;
-    boolean south;
-    boolean west;
-    boolean east;
-
-    public Enemy(float x, float y, float z, List<Walls> walls, int startId)
+    public Enemy(float x, float y, float z, List<Walls> walls, int startCell)
     {
         this.posX = x;
         this.posY = y;
         this.posZ = z;
-        this.start = 0;
+        this.start = startCell;
         shader = new Shader();
         this.walls = walls;
         wallBlock = walls.get(0);
         rand = new Random();
-        start = 0;
 
         this.direction = new ArrayList<Integer>();
         moving = false;
-        tempZ = 2.5f;
-        tempX = -2.5f;
-    }
-
-    public float getPosX() {
-        return posX;
-    }
-
-    public float getPosZ() {
-        return posZ;
+        tempZ = x;
+        tempX = y;
     }
 
     public void update(float deltaTime)

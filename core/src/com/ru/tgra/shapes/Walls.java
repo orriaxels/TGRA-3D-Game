@@ -8,14 +8,6 @@ public class Walls implements Comparable
     private boolean west;
     private boolean east;
 
-    private float posX;
-    private float posY;
-    private float posZ;
-
-    private float sizeX;
-    private float sizeY;
-    private float sizeZ;
-
     private Wall northWall;
     private Wall southWall;
     private Wall westWall;
@@ -86,28 +78,10 @@ public class Walls implements Comparable
         this.east = east;
     }
 
-    public void setPosition(float posX, float posY, float posZ)
-    {
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
-    }
-
-    public void setScale(float sizeX, float sizeY, float sizeZ)
-    {
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-        this.sizeZ = sizeZ;
-    }
 
     public Wall getNorthWall()
     {
         return northWall;
-    }
-
-    public void setNorthWall(Wall northWall)
-    {
-        this.northWall = northWall;
     }
 
     public Wall getSouthWall()
@@ -115,29 +89,14 @@ public class Walls implements Comparable
         return southWall;
     }
 
-    public void setSouthWall(Wall southWall)
-    {
-        this.southWall = southWall;
-    }
-
     public Wall getWestWall()
     {
         return westWall;
     }
 
-    public void setWestWall(Wall westWall)
-    {
-        this.westWall = westWall;
-    }
-
     public Wall getEastWall()
     {
         return eastWall;
-    }
-
-    public void setEastWall(Wall eastWall)
-    {
-        this.eastWall = eastWall;
     }
 
     @Override
